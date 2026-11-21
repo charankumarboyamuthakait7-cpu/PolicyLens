@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf %}
+{% block title %}Upload document{% endblock %}
+{% block content %}
+<div><h1>Upload document</h1>
+  <p class="sub">PDF only, up to {{ max_mb }} MB. The text is extracted page by page, split into chunks, embedded and indexed.</p></div>
+
+{% if not departments %}
+  <div class="alert alert-warning">There is no active department to upload into. Ask an Admin to check your department.</div>
+{% else %}
+<form method="post" enctype="multipart/form-data" class="cd pd" style="max-width:820px" data-validate data-busy-text="Uploading and indexing… this can take a minute">
+  {{ csrf() }}
+  <div class="row g-3">
+    <div class="col-12"><label class="form-label req" for="file">PDF file</label>
+      <input class="form-control" type="file" id="file" name="file" accept="application/pdf,.pdf" required data-max-bytes="{{ max_mb * 1048576 }}">
+      <div class="invalid-feedback">Choose a PDF file (maximum {{ max_mb }} MB).</div></div>
+    <div class="col-md-8"><label class="form-label req" for="title">Document title</label>
+      <input class="form-control" id="title" name="title" maxlength="255" required value="{{ form.get('title', '') }}">
+      <div class="invalid-feedback">Enter a title.</div></div>
+    <div class="col-md-4"><label class="form-label req" for="document_number">Document number</label>
+      <input class="form-control" id="document_number" name="document_number" maxlength="100" required value="{{ form.get('document_number', '') }}">
+      <div class="invalid-feedback">Enter the internal reference.</div></div>
+    <div class="col-md-4"><label class="form-label req" for="document_type">Document type</label>
+      <select class="form-select" id="document_type" name="document_type" required>
+        {% for t in doc_types %}<option {{ 'selected' if form.get('document_type') == t }}>{{ t }}</option>{% endfor %}</select></div>
+    <div class="col-md-4"><label class="form-label req" for="department_id">Department</label>
+      <select class="form-select" id="department_id" name="department_id" required>
+        {% for d in departments %}<option value="{{ d.department_id }}" {{ 'selected' if form.get('department_id') == d.department_id|string }}>{{ d.department_name }}</option>{% endfor %}</select>
+      {% if user.role != 'Admin' %}<div class="form-text">Analysts upload into their own department.</div>{% endif %}</div>
+    <div class="col-md-4"><label class="form-label" for="counterparty">Counterparty</label>
+      <input class="form-control" id="counterparty" name="counterparty" maxlength="255" value="{{ form.get('counterparty', '') }}"></div>
+    <div class="col-md-6"><label class="form-label" for="effective_date">Effective date</label>
+      <input class="form-control" type="date" id="effective_date" name="effective_date" value="{{ form.get('effective_date', '') }}"></div>
+    <div class="col-md-6"><label class="form-label" for="expiry_date">Expiry date</label>
+      <input class="form-control" type="date" id="expiry_date" name="expiry_date" value="{{ form.get('expiry_date', '') }}"></div>
+    <div class="col-12"><label class="form-label" for="description">Description</label>
+      <textarea class="form-control" id="description" name="description" rows="3">{{ form.get('description', '') }}</textarea></div>
+    {% if user.role == 'Admin' %}
+    <div class="col-12"><label class="form-label">Also share with these departments (view and ask)</label>
+      <div class="scopebox">
+        {% for d in departments %}<div class="form-check"><input class="form-check-input" type="checkbox" name="share_department_ids" value="{{ d.department_id }}" id="sh{{ d.department_id }}">
+          <label class="form-check-label" for="sh{{ d.department_id }}">{{ d.department_name }}</label></div>{% endfor %}
+      </div>
+      <div class="form-text">The owning department always has access. More grants can be made later on the Permissions page.</div></div>
+    {% endif %}
+  </div>
+  <div class="mt-3 d-flex gap-2 align-items-center">
+    <button class="btn btn-primary" type="submit">Upload and index <span class="spinner-border spinner-border-sm loading" aria-hidden="true"></span></button>
+    <a class="btn btn-outline-secondary" href="{{ url_for('main.documents') }}">Cancel</a>
+  </div>
+  <p class="small-mu mt-3 mb-0">If a document with the same number already exists in the department, this upload becomes the next version and the older version is archived, not deleted.</p>
+</form>
+{% endif %}
+{% endblock %}

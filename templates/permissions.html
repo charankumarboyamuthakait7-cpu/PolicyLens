@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, pill %}
+{% block title %}Permissions{% endblock %}
+{% block content %}
+<div><h1>Permissions</h1>
+  <p class="sub">Default rule: a document is visible to its own department. Use grants for exceptions. Every change is audited and takes effect immediately.</p></div>
+
+<section class="cd pd">
+  <h2>Grant access to a document</h2>
+  <form method="post" action="{{ url_for('main.permission_grant') }}" class="row g-2" data-validate id="grantForm">{{ csrf() }}
+    <div class="col-md-5"><label class="form-label req" for="g_doc">Document</label>
+      <select class="form-select" id="g_doc" name="document_id" required><option value="">Choose…</option>
+        {% for d in docs %}<option value="{{ d.document_id }}">{{ d.title }} ({{ d.department.department_name }})</option>{% endfor %}</select></div>
+    <div class="col-md-2"><label class="form-label req" for="g_type">Grant to</label>
+      <select class="form-select" id="g_type" name="grantee_type"><option value="user">A user</option><option value="department">A department</option></select></div>
+    <div class="col-md-5">
+      <label class="form-label req" for="g_user" id="lblUser">User</label>
+      <select class="form-select" id="g_user" name="user_id">{% for u in users %}<option value="{{ u.user_id }}">{{ u.full_name }} ({{ u.role }})</option>{% endfor %}</select>
+      <select class="form-select d-none" id="g_dept" name="department_id" aria-label="Department">{% for d in departments %}<option value="{{ d.department_id }}">{{ d.department_name }}</option>{% endfor %}</select></div>
+    <div class="col-12 d-flex gap-4 flex-wrap align-items-center">
+      <div class="form-check"><input class="form-check-input" type="checkbox" id="p_view" name="can_view" value="1" checked><label class="form-check-label" for="p_view">View</label></div>
+      <div class="form-check"><input class="form-check-input" type="checkbox" id="p_ask" name="can_ask" value="1"><label class="form-check-label" for="p_ask">Ask (AI and comparison)</label></div>
+      <div class="form-check"><input class="form-check-input" type="checkbox" id="p_edit" name="can_edit" value="1"><label class="form-check-label" for="p_edit">Edit</label></div>
+      <button class="btn btn-primary ms-auto" type="submit">Save grant</button></div>
+  </form>
+</section>
+
+<section class="cd"><div class="tw"><table>
+  <thead><tr><th>Document</th><th>Granted to</th><th>View</th><th>Ask</th><th>Edit</th><th>Granted by</th><th>Date</th><th></th></tr></thead>
+  <tbody>
+  {% for g in grants %}
+    <tr>
+      <td>{{ g.document.title }}<br><span class="small-mu">{{ g.document.department.department_name }}</span></td>
+      <td>{% if g.user %}{{ pill('User', 'b') }} {{ g.user.full_name }}{% else %}{{ pill('Department', 'v') }} {{ g.department.department_name }}{% endif %}</td>
+      <td>{{ '✓' if g.can_view else '–' }}</td><td>{{ '✓' if g.can_ask else '–' }}</td><td>{{ '✓' if g.can_edit else '–' }}</td>
+      <td>{{ g.granter.full_name }}</td><td class="small-mu">{{ g.created_at|dt(false) }}</td>
+      <td><form method="post" action="{{ url_for('main.permission_revoke', permission_id=g.permission_id) }}" data-confirm="Revoke this permission? Access stops immediately.">{{ csrf() }}
+        <button class="btn btn-sm btn-outline-secondary" type="submit">Revoke</button></form></td>
+    </tr>
+  {% else %}<tr><td colspan="8" class="mu p-4">No extra grants. Every department sees only its own documents.</td></tr>{% endfor %}
+  </tbody></table></div></section>
+{% endblock %}

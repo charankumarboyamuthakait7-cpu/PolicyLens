@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, icon %}
+{% block title %}Sign in{% endblock %}
+{% block public_content %}
+<div class="lg">
+  <section class="l">
+    <div class="br" style="padding:0 0 28px"><span class="lm">{{ icon('doc') }}</span>PolicyLens</div>
+    <h1>Contract intelligence you can verify.</h1>
+    <p>Ask questions, compare clauses and review compliance, with every answer tied to its source document and page.</p>
+    <p class="mb-0"><strong>Techtonic Solutions Pvt. Ltd.</strong></p>
+  </section>
+  <section>
+    <div class="loginbox">
+      <h2 class="mb-1" style="font-size:24px;font-weight:800">Sign in</h2>
+      <p class="sub mb-3">Accounts are created by your administrator.</p>
+      {% include "_flash.html" %}
+      <form method="post" novalidate data-validate>
+        {{ csrf() }}
+        <div class="mb-3">
+          <label class="form-label req" for="identifier">Username or email</label>
+          <input class="form-control" id="identifier" name="identifier" autocomplete="username" required autofocus maxlength="255">
+          <div class="invalid-feedback">Enter your username or email.</div>
+        </div>
+               <div class="mb-3">
+          <label class="form-label req" for="password">Password</label>
+          <div class="input-group">
+            <input class="form-control" type="password" id="password" name="password" autocomplete="current-password" required>
+            <button class="btn btn-outline-secondary" type="button" data-toggle-password="password" aria-label="Show or hide password">Show</button>
+            <div class="invalid-feedback">Enter your password.</div>
+          </div>
+        </div>
+
+        <div class="text-end mb-3">
+          <a href="{{ url_for('main.forgot_password') }}" class="small text-decoration-none">
+            Forgot Password?
+          </a>
+        </div>
+
+        <button class="btn btn-primary w-100" type="submit">Sign in</button>
+      </form>
+    </div>
+  </section>
+</div>
+{% endblock %}

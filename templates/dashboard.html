@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_pill, pill %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="hero">
+  {% if user.role == 'Admin' %}
+  <h1>Administration overview</h1>
+  <p>You manage users, departments, documents and access for the whole organization.</p>
+  {% else %}
+  <h1>Welcome, {{ user.full_name.split(' ')[0] }}</h1>
+  <p>{{ user.department.department_name if user.department else '' }} workspace. You only see documents you are
+    authorized to open.</p>
+  {% endif %}
+</section>
+
+<div class="quick">
+  {% if user.role in ('Admin', 'Analyst') %}<a class="btn btn-primary" href="{{ url_for('main.upload') }}">Upload
+    document</a>{% endif %}
+  <a class="btn btn-outline-secondary" href="{{ url_for('main.documents') }}">Browse documents</a>
+  <a class="btn btn-outline-secondary" href="{{ url_for('main.assistant') }}">Ask PolicyLens</a>
+  {% if user.role == 'Reviewer' %}<a class="btn btn-outline-secondary" href="{{ url_for('main.review_queue') }}">Review
+    findings</a>
+  {% else %}<a class="btn btn-outline-secondary" href="{{ url_for('main.findings') }}">Compliance findings</a>{% endif
+  %}
+</div>
+
+<div class="g4">
+  <div class="cd kp"><span>Accessible documents</span><b>{{ stats.documents }}</b></div>
+  <div class="cd kp"><span>Agreements</span><b>{{ stats.agreements }}</b></div>
+  <div class="cd kp"><span>Policies</span><b>{{ stats.policies }}</b></div>
+  <div class="cd kp"><span>Awaiting indexing</span><b>{{ stats.awaiting }}</b></div>
+  <div class="cd kp"><span>Failed processing</span><b>{{ stats.failed }}</b></div>
+  <div class="cd kp"><span>Open compliance findings</span><b>{{ stats.open_findings }}</b></div>
+  {% if user.role == 'Reviewer' %}<div class="cd kp"><span>Pending reviews</span><b>{{ stats.pending_reviews }}</b>
+  </div>{% endif %}
+  {% if user.role == 'Admin' %}
+  <div class="cd kp"><span>Users (active)</span><b>{{ stats.active_users }} / {{ stats.users }}</b></div>
+  <div class="cd kp"><span>Departments</span><b>{{ stats.departments }}</b></div>
+  <div class="cd kp"><span>Audit events</span><b>{{ stats.audit_events }}</b></div>
+  {% endif %}
+</div>
+
+<div class="flex-row">
+  <section class="cd pd" style="flex:2 1 400px">
+    <h2>Recent uploads</h2>
+    {% for d in stats.recent_uploads %}
+    <div class="line"><span><a href="{{ url_for('main.document_view', doc_id=d.document_id) }}"><strong>{{ d.title
+            }}</strong></a><br>
+        <span class="small-mu">{{ d.document_type }} · {{ d.department.department_name }} · v{{ d.version_number
+          }}</span></span>{{ status_pill(d.status) }}</div>
+    {% else %}<div class="ex">No documents yet.</div>{% endfor %}
+  </section>
+  {% if user.role == 'Admin' %}
+  <section class="cd pd" style="flex:1 1 320px">
+    <h2>Documents by department</h2>
+    {% set most = (stats.by_department | map(attribute=1) | max) or 1 %}
+    {% for name, count in stats.by_department %}
+    <div class="my-2">
+      <div class="d-flex justify-content-between" style="font-size:14px"><span>{{ name }}</span><b>{{ count }}</b></div>
+      <div class="bar">
+        <div style="width:{{ (count * 100 / most) | round }}%"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+</div>
+
+<div class="flex-row">
+  <section class="cd pd" style="flex:1 1 400px">
+    <h2>Recent AI questions</h2>
+    {% for q in stats.recent_questions %}
+    <div class="line"><span>{{ q.question_text[:110] }}{% if q.question_text|length > 110 %}…{% endif %}<br>
+        <span class="small-mu">{{ q.user.full_name }} · {{ q.created_at|dt }}</span></span>
+      {% if q.answers %}{{ pill('Not enough evidence','a') if q.answers[0].insufficient_evidence else
+      pill('Answered','g') }}{% endif %}</div>
+    {% else %}<div class="ex">No questions yet. Try the AI assistant.</div>{% endfor %}
+  </section>
+  <section class="cd pd" style="flex:1 1 400px">
+    <h2>{{ 'Recent activity' if user.role == 'Admin' else 'Your recent activity' }}</h2>
+    {% for a in stats.activity %}
+    <div class="line"><span><strong>{{ a.user.full_name if a.user else 'System' }}</strong> {{ a.action.replace('_', '
+        ') }}<br>
+        <span class="small-mu">{{ a.entity_type or '' }} {{ a.entity_id or '' }}</span></span><span class="small-mu">{{
+        a.created_at|dt }}</span></div>
+    {% else %}<div class="ex">No activity yet.</div>{% endfor %}
+  </section>
+</div>
+{% endblock %}

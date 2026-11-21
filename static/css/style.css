@@ -1,0 +1,1221 @@
+/* PolicyLens styles: the prototype's navy / indigo look layered on Bootstrap 5. */
+:root {
+    --bg: #F3F6FB;
+    --card: #fff;
+    --ink: #0F172A;
+    --mut: #52607A;
+    --bd: #E2E8F0;
+    --acc: #4F6BFF;
+    --navy: #0B1437;
+    --soft: #F8FAFD;
+    --g: #166534;
+    --gb: #DCFCE7;
+    --b: #1E40AF;
+    --bb: #DBEAFE;
+    --a: #92400E;
+    --ab: #FEF3C7;
+    --r: #991B1B;
+    --rb: #FEE2E2;
+    --v: #5B21B6;
+    --vb: #EDE9FE;
+    --n: #334155;
+    --nb: #F1F5F9;
+    --hl: #FFE58A;
+    color-scheme: light
+}
+
+* {
+    box-sizing: border-box
+}
+
+body {
+    font-family: Inter, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    margin: 0
+}
+
+a {
+    color: var(--b)
+}
+
+h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -.6px
+}
+
+.mu {
+    color: var(--mut)
+}
+
+.sub {
+    margin: 4px 0 0;
+    color: var(--mut);
+    font-size: 14px
+}
+
+.small-mu {
+    font-size: 12px;
+    color: var(--mut)
+}
+
+/* layout */
+.app {
+    display: flex;
+    min-height: 100vh
+}
+
+.sb {
+    width: 240px;
+    flex: none;
+    background: var(--navy);
+    padding: 20px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    color: #CBD5F5
+}
+
+.br {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-weight: 800;
+    font-size: 18px;
+    padding: 0 10px 16px
+}
+
+.lm {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: var(--acc);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff
+}
+
+.sb a {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 10px;
+    border-radius: 10px;
+    color: #CBD5F5;
+    text-decoration: none;
+    font-size: 14px
+}
+
+.sb a:hover {
+    background: #142059
+}
+
+.sb a.on {
+    background: #1D2D6E;
+    color: #fff;
+    font-weight: 600
+}
+
+.scope {
+    margin-top: auto;
+    background: #121E4F;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 12px;
+    line-height: 1.5
+}
+
+.scope b {
+    color: #fff
+}
+
+.mn {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column
+}
+
+.tb {
+    min-height: 64px;
+    background: var(--card);
+    border-bottom: 1px solid var(--bd);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 8px 28px;
+    font-size: 14px;
+    flex-wrap: wrap
+}
+
+.sp {
+    margin-left: auto
+}
+
+.ct {
+    padding: 26px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px
+}
+
+/* cards, buttons, pills */
+.cd {
+    background: var(--card);
+    border: 1px solid var(--bd);
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 8px 24px rgba(15, 23, 42, .04)
+}
+
+.pd {
+    padding: 20px
+}
+
+.cd h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+    font-weight: 700
+}
+
+.btn {
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 10px;
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center
+}
+
+.btn-primary {
+    background: var(--acc);
+    border-color: var(--acc)
+}
+
+.btn-primary:hover {
+    background: #3F58E0;
+    border-color: #3F58E0
+}
+
+.btn-outline-secondary {
+    border-color: var(--bd);
+    color: var(--ink)
+}
+
+.btn-outline-secondary:hover {
+    background: var(--soft);
+    color: var(--ink)
+}
+
+.btn-sm {
+    min-height: 32px
+}
+
+.pl {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap
+}
+
+.pl.g {
+    background: var(--gb);
+    color: var(--g)
+}
+
+.pl.b {
+    background: var(--bb);
+    color: var(--b)
+}
+
+.pl.a {
+    background: var(--ab);
+    color: var(--a)
+}
+
+.pl.r {
+    background: var(--rb);
+    color: var(--r)
+}
+
+.pl.v {
+    background: var(--vb);
+    color: var(--v)
+}
+
+.pl.n {
+    background: var(--nb);
+    color: var(--n)
+}
+
+.form-control,
+.form-select {
+    border-radius: 10px;
+    border-color: var(--bd);
+    font-size: 14px;
+    min-height: 40px
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--acc);
+    box-shadow: 0 0 0 3px rgba(79, 107, 255, .18)
+}
+
+.form-label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 4px
+}
+
+.req::after {
+    content: " *";
+    color: #B91C1C
+}
+
+/* tables */
+.tw {
+    overflow-x: auto
+}
+
+.cd table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 0
+}
+
+.cd th {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--mut);
+    padding: 11px 14px;
+    background: var(--soft);
+    white-space: nowrap
+}
+
+.cd td {
+    padding: 12px 14px;
+    border-top: 1px solid var(--bd);
+    vertical-align: middle
+}
+
+.cd tbody tr:hover td {
+    background: var(--soft)
+}
+
+/* dashboard */
+.hero {
+    background: var(--navy);
+    color: #fff;
+    border-radius: 16px;
+    padding: 24px 28px
+}
+
+.hero h1 {
+    color: #fff
+}
+
+.hero p {
+    margin: 6px 0 0;
+    color: #CBD5F5;
+    font-size: 14px
+}
+
+.g4 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 16px
+}
+
+.kp {
+    padding: 18px
+}
+
+.kp b {
+    display: block;
+    font-size: 28px;
+    letter-spacing: -.8px
+}
+
+.kp span {
+    font-size: 13px;
+    color: var(--mut)
+}
+
+.flex-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    align-items: flex-start
+}
+
+.line {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border-top: 1px solid var(--bd);
+    font-size: 14px
+}
+
+.line:first-of-type {
+    border-top: 0
+}
+
+.bar {
+    height: 8px;
+    background: var(--bd);
+    border-radius: 4px;
+    margin-top: 6px
+}
+
+.bar>div {
+    height: 100%;
+    background: var(--acc);
+    border-radius: 4px
+}
+
+.quick {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap
+}
+
+/* evidence, chat */
+.ex {
+    background: var(--soft);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.55
+}
+
+mark {
+    background: var(--hl);
+    color: inherit;
+    border-radius: 3px;
+    padding: 0 2px
+}
+
+.me {
+    align-self: flex-end;
+    max-width: 80%;
+    background: var(--navy);
+    color: #fff;
+    border-radius: 16px 16px 4px 16px;
+    padding: 11px 15px;
+    font-size: 14px;
+    white-space: pre-wrap
+}
+
+.ai {
+    display: flex;
+    gap: 12px;
+    font-size: 14px;
+    line-height: 1.65
+}
+
+.av {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--vb);
+    color: var(--v);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+    flex: none
+}
+
+.ai .txt {
+    white-space: pre-wrap;
+    min-width: 0
+}
+
+.cite {
+    display: inline-block;
+    background: var(--bb);
+    color: var(--b);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 0 6px;
+    margin: 0 1px;
+    text-decoration: none;
+    vertical-align: super;
+    line-height: 1.5
+}
+
+.chat {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 260px;
+    max-height: 62vh;
+    overflow-y: auto
+}
+
+.scopebox {
+    max-height: 220px;
+    overflow: auto;
+    border: 1px solid var(--bd);
+    border-radius: 10px;
+    padding: 8px 12px;
+    background: var(--soft)
+}
+
+.pdf-frame {
+    width: 100%;
+    height: 78vh;
+    border: 1px solid var(--bd);
+    border-radius: 10px;
+    background: #fff
+}
+
+.clause {
+    white-space: pre-wrap;
+    font-size: 13.5px;
+    line-height: 1.65
+}
+
+.steps {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap
+}
+
+.step {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 8px;
+    border-radius: 8px;
+    background: var(--nb);
+    color: var(--n);
+    min-width: 90px
+}
+
+.step.on {
+    background: var(--acc);
+    color: #fff
+}
+
+/* login */
+.lg {
+    display: flex;
+    min-height: 100vh;
+    flex-wrap: wrap
+}
+
+.lg>section {
+    flex: 1 1 420px;
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center
+}
+
+.lg .l {
+    background: var(--navy);
+    color: #fff
+}
+
+.lg .l h1 {
+    font-size: 42px;
+    line-height: 1.1;
+    letter-spacing: -1.4px;
+    max-width: 460px;
+    color: #fff
+}
+
+.lg .l p {
+    color: #CBD5F5;
+    max-width: 440px;
+    line-height: 1.6
+}
+
+.loginbox {
+    width: 100%;
+    max-width: 400px
+}
+
+/* misc */
+.loading {
+    display: none
+}
+
+.is-busy .loading {
+    display: inline-block
+}
+
+.disclaimer {
+    font-size: 12px;
+    color: var(--mut)
+}
+
+@media(max-width:860px) {
+    .app {
+        flex-direction: column
+    }
+
+    .sb {
+        width: auto;
+        flex-direction: row;
+        overflow-x: auto;
+        align-items: center;
+        padding: 10px
+    }
+
+    .br,
+    .scope {
+        display: none
+    }
+
+    .ct {
+        padding: 18px
+    }
+
+    .tb {
+        padding: 8px 18px
+    }
+
+    .lg>section {
+        padding: 28px
+    }
+
+    .sb a {
+        white-space: nowrap
+    }
+}
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   POLICYLENS - APPLICATION LAYOUT IMPROVEMENTS
+   ========================================================= */
+
+/* Desktop: keep the application within the screen */
+@media (min-width: 861px) {
+
+    .app {
+        height: 100vh;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .sb {
+        height: 100vh;
+        position: sticky;
+        top: 0;
+        overflow-y: auto;
+    }
+
+    .mn {
+        height: 100vh;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    .tb {
+        flex: 0 0 auto;
+    }
+
+    .ct {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+}
+
+/* Main content wrapper */
+.ct-content {
+    width: 100%;
+    min-width: 0;
+}
+
+/* Footer */
+.app-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px 18px;
+    padding-top: 14px;
+    margin-top: auto;
+    border-top: 1px solid var(--bd);
+    color: var(--mut);
+    font-size: 12px;
+}
+
+/* AI chat: messages scroll independently */
+.chat {
+    min-height: 220px;
+    max-height: min(52vh, 560px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding-right: 5px;
+    scroll-behavior: smooth;
+}
+
+/* Keep the question input visible below chat */
+#askForm {
+    flex: 0 0 auto;
+}
+
+/* Evidence panel scrolling */
+#evidence {
+    max-height: 280px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    padding-right: 5px;
+}
+
+/* Document selection list */
+.scopebox {
+    max-height: 260px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
+
+/* Documents table scrolling */
+.tw {
+    max-height: 58vh;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border-radius: 0 0 12px 12px;
+}
+
+/* Prevent table columns from becoming too narrow */
+.tw table {
+    min-width: 1050px;
+}
+
+/* Keep table headings visible while scrolling */
+.tw thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Scrollbar appearance */
+.chat,
+.scopebox,
+#evidence,
+.tw,
+.sb,
+.ct {
+    scrollbar-width: thin;
+    scrollbar-color: #B8C3D6 transparent;
+}
+
+.chat::-webkit-scrollbar,
+.scopebox::-webkit-scrollbar,
+#evidence::-webkit-scrollbar,
+.tw::-webkit-scrollbar,
+.sb::-webkit-scrollbar,
+.ct::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+
+.chat::-webkit-scrollbar-thumb,
+.scopebox::-webkit-scrollbar-thumb,
+#evidence::-webkit-scrollbar-thumb,
+.tw::-webkit-scrollbar-thumb,
+.sb::-webkit-scrollbar-thumb,
+.ct::-webkit-scrollbar-thumb {
+    background: #B8C3D6;
+    border-radius: 10px;
+}
+
+/* Mobile layout: allow normal page scrolling */
+@media (max-width: 860px) {
+
+    .app {
+        min-height: 100vh;
+        height: auto;
+        overflow: visible;
+    }
+
+    .mn {
+        min-height: 0;
+        height: auto;
+        overflow: visible;
+    }
+
+    .ct {
+        overflow: visible;
+    }
+
+    .tw {
+        max-height: 60vh;
+    }
+
+    .app-footer {
+        justify-content: flex-start;
+    }
+}
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   POLICYLENS - CONSISTENT SPACING BETWEEN UI ELEMENTS
+   ========================================================= */
+
+/* Space between cards and content sections */
+.ct-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Space between cards inside common layouts */
+.flex-row {
+    gap: 20px;
+}
+
+/* Cards should not touch each other */
+.cd {
+    margin-bottom: 0;
+}
+
+/* Space between vertically stacked cards */
+.cd + .cd {
+    margin-top: 18px;
+}
+
+/* Consistent spacing between headings and descriptions */
+.cd h1,
+.cd h2,
+.cd h3 {
+    margin-bottom: 12px;
+}
+
+/* Space between buttons */
+.btn + .btn {
+    margin-left: 6px;
+}
+
+/* Space between form controls */
+.form-control,
+.form-select {
+    margin-bottom: 4px;
+}
+
+/* Space between dashboard-style rows */
+.row {
+    row-gap: 16px;
+}
+
+/* Space between common page sections */
+section,
+article {
+    scroll-margin-top: 16px;
+}
+
+/* Avoid extra spacing on mobile */
+@media (max-width: 860px) {
+    .ct-content {
+        gap: 16px;
+    }
+
+    .flex-row {
+        gap: 16px;
+    }
+}
+
+
+
+
+
+
+
+/* =========================================================
+   FIX: VERTICAL ALIGNMENT OF STATUS BADGES
+   ========================================================= */
+
+/* Vertically center content in dashboard rows */
+.line {
+    align-items: center;
+}
+
+/* Keep all status badges compact and centered */
+.pl {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: center;
+    line-height: 1.3;
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+
+
+
+
+
+/* =========================================================
+   POLICYLENS - MOBILE AND TABLET RESPONSIVENESS
+   ========================================================= */
+
+/* Prevent unwanted horizontal page overflow */
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+}
+
+img,
+iframe {
+    max-width: 100%;
+}
+
+/* Tablet and mobile */
+@media (max-width: 860px) {
+
+    .app {
+        width: 100%;
+    }
+
+    .sb {
+        width: 100%;
+        max-width: 100%;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+    }
+
+    .sb a {
+        flex: 0 0 auto;
+        min-height: 40px;
+    }
+
+    .mn {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .ct {
+        width: 100%;
+        padding: 16px;
+    }
+
+    .ct-content {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .cd {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .hero {
+        padding: 20px;
+    }
+
+    .g4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pdf-frame {
+        height: 65vh;
+    }
+}
+
+/* Mobile phones */
+@media (max-width: 576px) {
+
+    h1 {
+        font-size: 22px;
+    }
+
+    .ct {
+        padding: 12px;
+        gap: 16px;
+    }
+
+    .pd {
+        padding: 14px;
+    }
+
+    .tb {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .sp {
+        margin-left: 0;
+    }
+
+    .g4 {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .kp {
+        padding: 15px;
+    }
+
+    .kp b {
+        font-size: 24px;
+    }
+
+    .flex-row {
+        gap: 12px;
+    }
+
+    .quick {
+        gap: 8px;
+    }
+
+    .quick .btn {
+        max-width: 100%;
+    }
+
+    .line {
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .me {
+        max-width: 92%;
+        overflow-wrap: anywhere;
+    }
+
+    .ai {
+        gap: 8px;
+    }
+
+    .ai .txt {
+        overflow-wrap: anywhere;
+    }
+
+    .chat {
+        min-height: 200px;
+        max-height: 55vh;
+    }
+
+    .pdf-frame {
+        height: 60vh;
+    }
+
+    .lg > section {
+        flex: 1 1 100%;
+        padding: 24px 18px;
+    }
+
+    .lg .l h1 {
+        font-size: 32px;
+    }
+
+    .loginbox {
+        max-width: 100%;
+    }
+
+    .app-footer {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn {
+        max-width: 100%;
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+    }
+}
+
+/* Very narrow phones */
+@media (max-width: 380px) {
+
+    .ct {
+        padding: 10px;
+    }
+
+    .pd {
+        padding: 12px;
+    }
+
+    .br {
+        font-size: 16px;
+    }
+
+    .sb a {
+        padding: 8px;
+        font-size: 12px;
+    }
+
+    .hero {
+        padding: 16px;
+    }
+
+    .hero h1 {
+        font-size: 20px;
+    }
+}
+
+
+
+
+/* Fix dashboard statistic cards to have equal heights */
+.g4 {
+    align-items: stretch;
+}
+
+.g4 .kp {
+    min-height: 100px;
+    height: 100px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Fix alignment of dashboard statistic cards */
+.g4 > .cd + .cd {
+    margin-top: 0;
+}
+
+
+
+/* =========================================================
+   POLICYLENS - LOGIN PAGE FINAL LAYOUT
+   ========================================================= */
+
+.lg {
+    width: 100%;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    flex-wrap: nowrap;
+    margin: 0;
+    background: #F3F6FB;
+}
+
+.lg > section {
+    width: 100%;
+    min-width: 0;
+    min-height: 100vh;
+    padding: clamp(32px, 5vw, 80px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.lg .l {
+    background: #0B1437;
+    color: #fff;
+}
+
+.lg .l h1 {
+    font-size: clamp(34px, 3.2vw, 52px);
+    line-height: 1.15;
+    max-width: 560px;
+}
+
+.lg .l p {
+    max-width: 520px;
+    font-size: 16px;
+    line-height: 1.75;
+}
+
+.lg > section:last-child {
+    align-items: center;
+    background: #F3F6FB;
+}
+
+.loginbox {
+    width: 100%;
+    max-width: 460px;
+}
+
+.loginbox .form-control {
+    min-height: 48px;
+}
+
+.loginbox .btn-primary {
+    min-height: 48px;
+}
+
+/* Smaller laptops */
+@media (max-width: 1000px) {
+    .lg {
+        grid-template-columns: 0.9fr 1.1fr;
+    }
+
+    .lg > section {
+        padding: 36px;
+    }
+
+    .lg .l h1 {
+        font-size: 36px;
+    }
+}
+
+/* Mobile and tablet */
+@media (max-width: 768px) {
+    .lg {
+        grid-template-columns: 1fr;
+        min-height: 100vh;
+    }
+
+    .lg > section {
+        min-height: auto;
+        padding: 32px 24px;
+    }
+
+    .lg .l {
+        padding-top: 40px;
+        padding-bottom: 40px;
+    }
+
+    .lg .l h1 {
+        font-size: 32px;
+    }
+
+    .lg > section:last-child {
+        padding-top: 36px;
+        padding-bottom: 48px;
+    }
+}
+
+
+.public-main {
+    width: 100%;
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
+}

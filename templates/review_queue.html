@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_pill, severity_pill %}
+{% block title %}Review queue{% endblock %}
+{% block content %}
+<div><h1>Review queue</h1><p class="sub">Findings assigned to you. Every decision is recorded with your name and the time.</p></div>
+
+<section class="cd">
+  <div class="p-3 pb-0"><h2>Waiting for your review ({{ pending|length }})</h2></div>
+  <div class="tw"><table>
+    <thead><tr><th>ID</th><th>Finding</th><th>Document</th><th>Severity</th><th>Status</th><th>Analyst</th><th>Waiting since</th></tr></thead>
+    <tbody>
+    {% for f in pending %}
+      <tr>
+        <td><a href="{{ url_for('main.finding_view', finding_id=f.finding_id) }}"><strong>F-{{ '%04d' | format(f.finding_id) }}</strong></a></td>
+        <td>{{ f.title }}</td>
+        <td>{{ f.document.title }}{% if f.page_number %}<br><span class="small-mu">page {{ f.page_number }}</span>{% endif %}</td>
+        <td>{{ severity_pill(f.severity) }}</td><td>{{ status_pill(f.status) }}</td>
+        <td>{{ f.creator.full_name }}</td><td class="small-mu">{{ f.updated_at|dt }}</td>
+      </tr>
+    {% else %}<tr><td colspan="7" class="mu p-4">Nothing is waiting for review.</td></tr>{% endfor %}
+    </tbody></table></div>
+</section>
+
+<section class="cd pd">
+  <h2>Your recent decisions</h2>
+  {% for h in decided %}
+    <div class="line"><span><a href="{{ url_for('main.finding_view', finding_id=h.finding_id) }}">F-{{ '%04d' | format(h.finding_id) }}</a> · <strong>{{ h.to_status }}</strong>
+      {% if h.note %}<br><span class="small-mu">{{ h.note }}</span>{% endif %}</span><span class="small-mu">{{ h.created_at|dt }}</span></div>
+  {% else %}<div class="ex">No decisions yet.</div>{% endfor %}
+</section>
+{% endblock %}

@@ -1,0 +1,266 @@
+
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, pill %}
+
+{% block title %}Users{% endblock %}
+
+{% block content %}
+
+<div class="page-head">
+    <div>
+        <h1>Users</h1>
+        <p class="sub">Manage user accounts, roles, departments and account status.</p>
+    </div>
+</div>
+
+<!-- Create User -->
+<section class="cd pd">
+    <h2>Create user</h2>
+
+    <form method="POST"
+          action="{{ url_for('main.user_create') }}"
+          class="row g-2"
+          data-validate>
+
+        {{ csrf() }}
+
+        <div class="col-md-4">
+            <label class="form-label req">Username</label>
+            <input class="form-control"
+                   name="username"
+                   maxlength="80"
+                   required>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label req">Full name</label>
+            <input class="form-control"
+                   name="full_name"
+                   maxlength="120"
+                   required>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label req">Email</label>
+            <input class="form-control"
+                   type="email"
+                   name="email"
+                   maxlength="255"
+                   required>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label req">Role</label>
+            <select name="role" class="form-select" required>
+                <option value="">Select Role</option>
+                <option value="Admin">Admin</option>
+                <option value="Analyst">Analyst</option>
+                <option value="Reviewer">Reviewer</option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label req">Department</label>
+            <select name="department_id" class="form-select" required>
+                <option value="">Select Department</option>
+                {% for d in departments %}
+                    <option value="{{ d.department_id }}">
+                        {{ d.department_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label req">Password</label>
+            <input type="password"
+                   name="password"
+                   class="form-control"
+                   minlength="10"
+                   autocomplete="new-password"
+                   required>
+        </div>
+
+        <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-primary">
+                Create user
+            </button>
+        </div>
+
+    </form>
+</section>
+
+<!-- Search Users -->
+<section class="cd pd">
+    <h2>Search users</h2>
+
+    <form method="GET"
+          action="{{ url_for('main.users') }}"
+          class="row g-2">
+
+        <div class="col-md-9">
+            <input type="text"
+                   name="q"
+                   class="form-control"
+                   value="{{ term or '' }}"
+                   placeholder="Search username, name or email">
+        </div>
+
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-outline-secondary w-100">
+                Search
+            </button>
+        </div>
+    </form>
+</section>
+
+<!-- Users List -->
+<section class="cd">
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+        <h2>Users list</h2>
+        <span class="small-mu">
+            {{ users|length }} user(s)
+        </span>
+    </div>
+
+    <div class="tw">
+        <table>
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Full name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td><strong>{{ u.username }}</strong></td>
+                    <td>{{ u.full_name }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>{{ u.role }}</td>
+
+                    <td>
+                        {{ u.department.department_name if u.department else '-' }}
+                    </td>
+
+                    <td>
+                        {{ pill('Active', 'g') if u.is_active else pill('Inactive', 'n') }}
+                    </td>
+
+                    <td class="text-nowrap">
+                        <button class="btn btn-sm btn-outline-secondary"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#editUser{{ u.user_id }}">
+                            Edit
+                        </button>
+
+                        <a href="{{ url_for('main.admin_reset_password', user_id=u.user_id) }}"
+                           class="btn btn-sm btn-outline-secondary">
+                            Reset password
+                        </a>
+                    </td>
+                </tr>
+
+                <!-- Edit User -->
+                <tr class="collapse" id="editUser{{ u.user_id }}">
+                    <td colspan="7" style="background:var(--soft)">
+                        <form method="POST"
+                              action="{{ url_for('main.user_update', user_id=u.user_id) }}"
+                              class="row g-2">
+
+                            {{ csrf() }}
+
+                            <div class="col-md-3">
+                                <label class="form-label">Full name</label>
+                                <input class="form-control"
+                                       name="full_name"
+                                       value="{{ u.full_name }}"
+                                       required>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label">Email</label>
+                                <input class="form-control"
+                                       type="email"
+                                       name="email"
+                                       value="{{ u.email }}"
+                                       required>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Role</label>
+                                <select name="role" class="form-select" required>
+                                    <option value="Admin"
+                                            {% if u.role == 'Admin' %}selected{% endif %}>
+                                        Admin
+                                    </option>
+
+                                    <option value="Analyst"
+                                            {% if u.role == 'Analyst' %}selected{% endif %}>
+                                        Analyst
+                                    </option>
+
+                                    <option value="Reviewer"
+                                            {% if u.role == 'Reviewer' %}selected{% endif %}>
+                                        Reviewer
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Department</label>
+                                <select name="department_id" class="form-select" required>
+                                    {% for d in departments %}
+                                        <option value="{{ d.department_id }}"
+                                                {% if u.department_id == d.department_id %}selected{% endif %}>
+                                            {{ d.department_name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Status</label>
+                                <select name="is_active" class="form-select" required>
+                                    <option value="1" {% if u.is_active %}selected{% endif %}>
+                                        Active
+                                    </option>
+                                    <option value="0" {% if not u.is_active %}selected{% endif %}>
+                                        Inactive
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="col-12 mt-2">
+                                <button type="submit" class="btn btn-primary btn-sm">
+                                    Save changes
+                                </button>
+                            </div>
+
+                        </form>
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+                {% if not users %}
+                <tr>
+                    <td colspan="7" class="text-center small-mu">
+                        No users found.
+                    </td>
+                </tr>
+                {% endif %}
+
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

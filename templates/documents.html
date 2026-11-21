@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_pill, pill, pager %}
+{% block title %}Documents{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap gap-2">
+  <div>
+    <h1>Documents</h1>
+    <p class="sub">{{ pagination.total }} document{{ '' if pagination.total == 1 else 's' }} you are authorized to view
+    </p>
+  </div>
+  {% if user.role in ('Admin', 'Analyst') %}<div><a class="btn btn-primary" href="{{ url_for('main.upload') }}">Upload
+      document</a></div>{% endif %}
+</div>
+
+<section class="cd">
+  <form method="get" class="row g-2 p-3">
+    <div class="col-12 col-lg-4"><label class="form-label" for="q">Search</label>
+      <input class="form-control" id="q" name="q" value="{{ args.get('q', '') }}"
+        placeholder="Title, number or counterparty">
+    </div>
+    <div class="col-6 col-lg-2"><label class="form-label" for="department">Department</label>
+      <select class="form-select" id="department" name="department">
+        <option value="">All</option>
+        {% for d in departments %}<option value="{{ d.department_id }}" {{ 'selected' if
+          args.get('department')==d.department_id|string }}>{{ d.department_name }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-lg-2"><label class="form-label" for="type">Type</label>
+      <select class="form-select" id="type" name="type">
+        <option value="">All</option>
+        {% for t in doc_types %}<option {{ 'selected' if args.get('type')==t }}>{{ t }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-lg-2"><label class="form-label" for="status">Status</label>
+      <select class="form-select" id="status" name="status">
+        <option value="">All</option>
+        {% for s in statuses %}<option {{ 'selected' if args.get('status')==s }}>{{ s }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-lg-2"><label class="form-label" for="uploader">Uploaded by</label>
+      <select class="form-select" id="uploader" name="uploader">
+        <option value="">Anyone</option>
+        {% for u in uploaders %}<option value="{{ u.user_id }}" {{ 'selected' if args.get('uploader')==u.user_id|string
+          }}>{{ u.full_name }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-6 col-lg-2"><label class="form-label" for="from">Uploaded from</label>
+      <input class="form-control" type="date" id="from" name="from" value="{{ args.get('from', '') }}">
+    </div>
+    <div class="col-6 col-lg-2"><label class="form-label" for="to">Uploaded to</label>
+      <input class="form-control" type="date" id="to" name="to" value="{{ args.get('to', '') }}">
+    </div>
+    {% if user.role == 'Admin' %}
+    <div class="col-12 col-lg-3 d-flex align-items-end">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="archived" name="archived" value="1" {{ 'checked' if
+          show_archived }}>
+        <label class="form-check-label" for="archived">Include archived</label>
+      </div>
+    </div>
+    {% endif %}
+    <div class="col-12 col-lg d-flex align-items-end gap-2">
+      <button class="btn btn-primary" type="submit">Apply filters</button>
+      <a class="btn btn-outline-secondary" href="{{ url_for('main.documents') }}">Clear</a>
+    </div>
+  </form>
+
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Document</th>
+          <th>Number</th>
+          <th>Department</th>
+          <th>Type</th>
+          <th>Ver.</th>
+          <th>Uploaded by</th>
+          <th>Uploaded</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in pagination.items %}
+        <tr>
+          <td><a href="{{ url_for('main.document_view', doc_id=d.document_id) }}"><strong>{{ d.title }}</strong></a>
+            {% if d.counterparty %}<br><span class="small-mu">{{ d.counterparty }}</span>{% endif %}</td>
+          <td>{{ d.document_number }}</td>
+          <td>{{ d.department.department_name }}</td>
+          <td>{{ pill(d.document_type, 'n') }}</td>
+          <td>v{{ d.version_number }}</td>
+          <td>{{ d.uploader.full_name }}</td>
+          <td class="small-mu">{{ d.created_at|dt(false) }}</td>
+          <td>{{ status_pill(d.status) }}</td>
+          <td class="text-nowrap">
+            <a class="btn btn-sm btn-outline-secondary"
+              href="{{ url_for('main.document_view', doc_id=d.document_id) }}">View</a>
+            <a class="btn btn-sm btn-outline-secondary"
+              href="{{ url_for('main.document_download', doc_id=d.document_id) }}">Download</a>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="9" class="mu p-4">No documents match. {% if user.role in ('Admin','Analyst') %}Upload one to get
+            started.{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {{ pager(pagination, 'main.documents') }}
+</section>
+{% endblock %}

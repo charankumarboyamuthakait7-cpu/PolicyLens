@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, status_pill, pill %}
+{% block title %}{{ doc.title }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap gap-2 align-items-start">
+  <div><h1>{{ doc.title }}</h1>
+    <p class="sub">{{ doc.document_type }} · {{ doc.department.department_name }} · {{ doc.document_number }} · version {{ doc.version_number }}</p></div>
+  <div class="d-flex gap-2 flex-wrap">
+    <a class="btn btn-outline-secondary" href="{{ url_for('main.document_download', doc_id=doc.document_id) }}">Download PDF</a>
+    {% if can_edit and not doc.is_archived %}
+      <form method="post" action="{{ url_for('main.document_reprocess', doc_id=doc.document_id) }}" data-busy-text="Re-indexing…">{{ csrf() }}
+        <button class="btn btn-outline-secondary" type="submit">Reprocess indexing <span class="spinner-border spinner-border-sm loading"></span></button></form>
+      <form method="post" action="{{ url_for('main.document_archive', doc_id=doc.document_id) }}" data-confirm="Archive this document? It will be hidden from search and from non-admins.">{{ csrf() }}
+        <button class="btn btn-outline-secondary" type="submit">Archive</button></form>
+    {% endif %}
+    {% if user.role == 'Admin' and doc.is_archived %}
+      <form method="post" action="{{ url_for('main.document_restore', doc_id=doc.document_id) }}">{{ csrf() }}
+        <button class="btn btn-primary" type="submit">Restore</button></form>
+    {% endif %}
+  </div>
+</div>
+
+{% if doc.status == 'Failed' %}<div class="alert alert-danger mb-0"><strong>Indexing failed.</strong> {{ doc.processing_error }}</div>{% endif %}
+
+<div class="flex-row">
+  <section class="cd pd" style="flex:1 1 320px">
+    <h2>Details</h2>
+    <dl class="row mb-0" style="font-size:14px">
+      <dt class="col-5 mu fw-normal">Status</dt><dd class="col-7">{{ status_pill(doc.status) }}</dd>
+      <dt class="col-5 mu fw-normal">Indexing</dt><dd class="col-7">{{ chunk_count }} chunks · {{ vector_count }} vectors</dd>
+      <dt class="col-5 mu fw-normal">Pages</dt><dd class="col-7">{{ doc.page_count or '-' }}</dd>
+      <dt class="col-5 mu fw-normal">Counterparty</dt><dd class="col-7">{{ doc.counterparty or '-' }}</dd>
+      <dt class="col-5 mu fw-normal">Effective date</dt><dd class="col-7">{{ doc.effective_date|dt if doc.effective_date else '-' }}</dd>
+      <dt class="col-5 mu fw-normal">Expiry date</dt><dd class="col-7">{{ doc.expiry_date|dt if doc.expiry_date else '-' }}</dd>
+      <dt class="col-5 mu fw-normal">Uploaded by</dt><dd class="col-7">{{ doc.uploader.full_name }}</dd>
+      <dt class="col-5 mu fw-normal">Uploaded</dt><dd class="col-7">{{ doc.created_at|dt }}</dd>
+      <dt class="col-5 mu fw-normal">File size</dt><dd class="col-7">{{ '%.1f' | format(doc.file_size / 1024) }} KB</dd>
+    </dl>
+    {% if doc.description %}<hr><p style="font-size:14px" class="mb-0">{{ doc.description }}</p>{% endif %}
+
+    {% if versions|length > 1 %}
+      <hr><h2>Version history</h2>
+      {% for v in versions %}
+        <div class="line"><span>{% if v.document_id == doc.document_id %}<strong>Version {{ v.version_number }}</strong> (this one){% else %}
+          <a href="{{ url_for('main.document_view', doc_id=v.document_id) }}">Version {{ v.version_number }}</a>{% endif %}<br>
+          <span class="small-mu">{{ v.created_at|dt(false) }}</span></span>{{ status_pill(v.status) }}</div>
+      {% endfor %}
+    {% endif %}
+
+    {% if can_edit %}
+      <hr><h2>Edit details</h2>
+      <form method="post" action="{{ url_for('main.document_edit', doc_id=doc.document_id) }}" data-validate>{{ csrf() }}
+        <div class="mb-2"><label class="form-label req" for="e_title">Title</label><input class="form-control" id="e_title" name="title" required maxlength="255" value="{{ doc.title }}"></div>
+        <div class="mb-2"><label class="form-label req" for="e_num">Document number</label><input class="form-control" id="e_num" name="document_number" required maxlength="100" value="{{ doc.document_number }}"></div>
+        <div class="mb-2"><label class="form-label" for="e_type">Type</label><select class="form-select" id="e_type" name="document_type">
+          {% for t in doc_types %}<option {{ 'selected' if t == doc.document_type }}>{{ t }}</option>{% endfor %}</select></div>
+        <div class="mb-2"><label class="form-label" for="e_cp">Counterparty</label><input class="form-control" id="e_cp" name="counterparty" maxlength="255" value="{{ doc.counterparty or '' }}"></div>
+        <div class="row g-2 mb-2">
+          <div class="col"><label class="form-label" for="e_eff">Effective</label><input class="form-control" type="date" id="e_eff" name="effective_date" value="{{ doc.effective_date or '' }}"></div>
+          <div class="col"><label class="form-label" for="e_exp">Expiry</label><input class="form-control" type="date" id="e_exp" name="expiry_date" value="{{ doc.expiry_date or '' }}"></div></div>
+        <div class="mb-3"><label class="form-label" for="e_desc">Description</label><textarea class="form-control" id="e_desc" name="description" rows="2">{{ doc.description or '' }}</textarea></div>
+        <button class="btn btn-primary btn-sm" type="submit">Save details</button>
+      </form>
+    {% endif %}
+  </section>
+
+  <section class="cd pd" style="flex:2 1 520px">
+    <h2>PDF preview</h2>
+    {% if doc.is_archived and user.role != 'Admin' %}
+      <div class="ex">This document is archived.</div>
+    {% else %}
+      <iframe class="pdf-frame" id="pdfFrame" title="PDF preview of {{ doc.title }}"
+              src="{{ url_for('main.document_file', doc_id=doc.document_id) }}" data-base="{{ url_for('main.document_file', doc_id=doc.document_id) }}"></iframe>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

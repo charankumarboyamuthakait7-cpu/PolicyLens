@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pill, pager %}
+{% block title %}Question history{% endblock %}
+{% block content %}
+<div><h1>Question history</h1>
+  <p class="sub">{{ 'All questions asked in PolicyLens' if user.role == 'Admin' else 'Your questions and the answers you received' }}</p></div>
+
+{% for q in pagination.items %}
+  {% set a = q.answers[0] if q.answers else none %}
+  <section class="cd pd">
+    <div class="d-flex justify-content-between flex-wrap gap-2">
+      <div><strong>{{ q.question_text }}</strong><br>
+        <span class="small-mu">{{ q.user.full_name }} · {{ q.created_at|dt }} · scope: {{ q.scope_type }}</span></div>
+      {% if a %}{{ pill('Not enough evidence', 'a') if a.insufficient_evidence else pill('Answered', 'g') }}{% endif %}
+    </div>
+    {% if a %}
+      <div class="clause mt-3">{{ a.answer_text }}</div>
+      {% if a.sources %}
+        <hr><div class="small-mu mb-2">Sources</div>
+        {% for s in a.sources %}
+          {% if viewable is none or s.document_id in viewable %}
+            <div class="ex mb-2"><b>[S{{ loop.index }}] <a href="{{ url_for('main.document_view', doc_id=s.document_id) }}#page={{ s.page_number }}">{{ s.document.title }}</a> · page {{ s.page_number }}</b><br>
+              <mark>{{ s.quoted_text[:500] }}{% if s.quoted_text|length > 500 %}…{% endif %}</mark></div>
+          {% else %}
+            <div class="ex mb-2">A cited document is no longer available to you.</div>
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+  </section>
+{% else %}
+  <div class="ex">No questions yet. Open the AI assistant to ask one.</div>
+{% endfor %}
+<div class="cd">{{ pager(pagination, 'main.history') }}</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}AI assistant{% endblock %}
+{% block content %}
+<div>
+  <h1>AI assistant</h1>
+  <p class="sub">Answers use only the documents you are authorized to open and cite the document and page they came
+    from.</p>
+</div>
+
+{% if not llm_ready %}
+<div class="alert alert-warning mb-0">The AI model is not configured yet (<code>GROQ_API_KEY</code> is empty in
+  <code>.env</code>). Retrieval still works, but answers cannot be generated.</div>
+{% endif %}
+{% if not docs %}
+<div class="alert alert-info mb-0">There are no indexed documents you can ask about yet.</div>
+{% endif %}
+
+<div class="flex-row">
+  <section class="cd pd" style="flex:2 1 520px;display:flex;flex-direction:column;gap:14px" id="assistant"
+    data-ask-url="{{ url_for('main.assistant_ask') }}">
+    <div class="chat" id="chat" aria-live="polite">
+      <div class="ex" id="chatEmpty">Ask a question in your own words, for example “How many days of leave do employees
+        get, and who approves it?”. You do not need to use the exact words from the PDF.</div>
+    </div>
+    <form id="askForm" class="d-flex gap-2">
+      <input class="form-control" id="question" aria-label="Ask a question" maxlength="2000"
+        placeholder="Ask about your documents…" autocomplete="off" required>
+      <button class="btn btn-primary" type="submit" id="askBtn">Send <span
+          class="spinner-border spinner-border-sm loading" aria-hidden="true"></span></button>
+    </form>
+    <p class="disclaimer mb-0">Not legal advice. Check every answer against the cited pages.</p>
+  </section>
+
+  <aside style="flex:1 1 320px;display:flex;flex-direction:column;gap:18px">
+    <section class="cd pd">
+      <h2>Search scope</h2>
+      <label class="form-label" for="deptFilter">Department</label>
+      <select class="form-select mb-3" id="deptFilter">
+        <option value="">All my departments</option>
+        {% for id, name in departments %}<option value="{{ id }}">{{ name }}</option>{% endfor %}
+      </select>
+      <div class="d-flex justify-content-between align-items-center"><span class="form-label mb-0">Documents</span>
+        <a href="#" id="toggleAll" class="small-mu">Select / clear all</a>
+      </div>
+      <div class="scopebox mt-1" id="docScope">
+        {% for d in docs %}
+        <div class="form-check" data-dept="{{ d.department_id }}">
+          <input class="form-check-input doc-check" type="checkbox" value="{{ d.document_id }}"
+            id="doc{{ d.document_id }}">
+          <label class="form-check-label" for="doc{{ d.document_id }}" style="font-size:13px">{{ d.title }}<br><span
+              class="small-mu">{{ d.department.department_name }} · v{{ d.version_number }}</span></label>
+        </div>
+        {% else %}<span class="small-mu">No documents available.</span>{% endfor %}
+      </div>
+      <div class="form-text">Nothing ticked means all documents you can ask about.</div>
+    </section>
+    <section class="cd pd">
+      <h2>Evidence</h2>
+      <div id="evidence"><span class="mu" style="font-size:14px">Sources for the latest answer appear here.</span></div>
+    </section>
+  </aside>
+</div>
+{% endblock %}

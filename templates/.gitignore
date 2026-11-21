@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+*_venv/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+
+# Flask
+instance/
+*.log
+
+# Uploaded documents
+uploads/
+storage/uploads/
+
+# Vector databases
+chroma_db/
+vector_store/
+faiss_index/
+
+# IDE
+.vscode/
+.idea/
+
+# Windows
+Thumbs.db

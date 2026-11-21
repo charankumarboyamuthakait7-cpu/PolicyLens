@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% from "_macros.html" import pill, pager %}
+{% block title %}Audit history{% endblock %}
+{% block content %}
+<div>
+  <h1>Audit history</h1>
+  <p class="sub">Read-only record of important actions. Passwords, API keys and session tokens are never logged.</p>
+</div>
+<section class="cd">
+  <form method="get" class="row g-2 p-3">
+    <div class="col-md-3"><label class="form-label" for="action">Action</label>
+      <select class="form-select" id="action" name="action">
+        <option value="">All</option>
+        {% for a in actions %}<option value="{{ a }}" {{ 'selected' if args.get('action')==a }}>{{ a.replace('_', ' ')
+          }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3"><label class="form-label" for="user_id">User</label>
+      <select class="form-select" id="user_id" name="user_id">
+        <option value="">Anyone</option>
+        {% for u in users %}<option value="{{ u.user_id }}" {{ 'selected' if args.get('user_id')==u.user_id|string }}>{{
+          u.full_name }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2"><label class="form-label" for="from">From</label><input class="form-control" type="date"
+        id="from" name="from" value="{{ args.get('from', '') }}"></div>
+    <div class="col-md-2"><label class="form-label" for="to">To</label><input class="form-control" type="date" id="to"
+        name="to" value="{{ args.get('to', '') }}"></div>
+    <div class="col-md-2 d-flex align-items-end gap-2"><button class="btn btn-primary" type="submit">Filter</button>
+      <a class="btn btn-outline-secondary" href="{{ url_for('main.audit_logs') }}">Clear</a>
+    </div>
+  </form>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>Actor</th>
+          <th>Action</th>
+          <th>Object</th>
+          <th>Details</th>
+          <th>IP</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in pagination.items %}
+        <tr>
+          <td class="small-mu text-nowrap">{{ a.created_at|dt }}</td>
+          <td><strong>{{ a.user.full_name if a.user else 'System / anonymous' }}</strong></td>
+          <td>{{ pill(a.action.replace('_', ' '), 'n') }}</td>
+          <td>{{ a.entity_type or '' }} {{ a.entity_id or '' }}</td>
+          <td class="small-mu" style="max-width:340px;word-break:break-word">{% if a.details %}{% for k, v in
+            a.details.items() %}{{ k }}: {{ v }}{% if not loop.last %}; {% endif %}{% endfor %}{% endif %}</td>
+          <td class="small-mu">{{ a.ip_address or '' }}</td>
+        </tr>
+        {% else %}<tr>
+          <td colspan="6" class="mu p-4">No audit records match.</td>
+        </tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {{ pager(pagination, 'main.audit_logs') }}
+</section>
+{% endblock %}

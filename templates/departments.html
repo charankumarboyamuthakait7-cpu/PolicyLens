@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, pill %}
+{% block title %}Departments{% endblock %}
+{% block content %}
+<div>
+  <h1>Departments</h1>
+  <p class="sub">Departments are the default access boundary for documents. They are deactivated, never deleted, so
+    history stays intact.</p>
+</div>
+
+<section class="cd pd">
+  <h2>Create department</h2>
+  <form method="post" action="{{ url_for('main.department_create') }}" class="row g-2" data-validate>{{ csrf() }}
+    <div class="col-md-4"><label class="form-label req" for="d_name">Name</label><input class="form-control" id="d_name"
+        name="name" required maxlength="120"></div>
+    <div class="col-md-6"><label class="form-label" for="d_desc">Description</label><input class="form-control"
+        id="d_desc" name="description"></div>
+    <div class="col-md-2 d-flex align-items-end"><button class="btn btn-primary" type="submit">Create</button></div>
+  </form>
+</section>
+
+<section class="cd">
+  <div class="tw">
+    <table>
+      <thead>
+        <tr>
+          <th>Department</th>
+          <th>Users</th>
+          <th>Documents</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+        <tr>
+          <td><strong>{{ r.dept.department_name }}</strong>{% if r.dept.description %}<br><span class="small-mu">{{
+              r.dept.description }}</span>{% endif %}</td>
+          <td>{{ r.users }}</td>
+          <td>{{ r.docs }}</td>
+          <td>{{ pill('Active', 'g') if r.dept.is_active else pill('Inactive', 'n') }}</td>
+          <td class="text-nowrap">
+            <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse"
+              data-bs-target="#dep{{ r.dept.department_id }}">Edit</button>
+            <form method="post" action="{{ url_for('main.department_toggle', dept_id=r.dept.department_id) }}"
+              class="d-inline"
+              data-confirm="{{ 'Deactivate' if r.dept.is_active else 'Activate' }} {{ r.dept.department_name }}?">{{
+              csrf() }}
+              <button class="btn btn-sm btn-outline-secondary" type="submit">{{ 'Deactivate' if r.dept.is_active else
+                'Activate' }}</button>
+            </form>
+          </td>
+        </tr>
+        <tr class="collapse" id="dep{{ r.dept.department_id }}">
+          <td colspan="5" style="background:var(--soft)">
+            <form method="post" action="{{ url_for('main.department_update', dept_id=r.dept.department_id) }}"
+              class="row g-2">{{ csrf() }}
+              <div class="col-md-4"><input class="form-control" name="name" value="{{ r.dept.department_name }}"
+                  required aria-label="Department name"></div>
+              <div class="col-md-6"><input class="form-control" name="description"
+                  value="{{ r.dept.description or '' }}" aria-label="Description"></div>
+              <div class="col-md-2"><button class="btn btn-primary btn-sm" type="submit">Save</button></div>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% endblock %}

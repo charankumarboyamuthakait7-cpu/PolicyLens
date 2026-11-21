@@ -1,0 +1,43 @@
+{# Shared form fields for creating or editing a finding. Expects: docs, rules, severities, f (values). #}
+<div class="row g-3">
+  <div class="col-12"><label class="form-label req" for="title">Finding title</label>
+    <input class="form-control" id="title" name="title" maxlength="255" required
+      value="{{ f.title if f and f.title else '' }}">
+    <div class="invalid-feedback">Enter a title.</div>
+  </div>
+  <div class="col-md-8"><label class="form-label req" for="document_id">Supporting document</label>
+    <select class="form-select" id="document_id" name="document_id" required>
+      <option value="">Choose a document…</option>
+      {% for d in docs %}<option value="{{ d.document_id }}" {{ 'selected' if f and
+        (f.document_id|string)==d.document_id|string }}>{{ d.title }} ({{ d.department.department_name }})</option>{%
+      endfor %}
+    </select>
+    <div class="invalid-feedback">Choose a document.</div>
+  </div>
+  <div class="col-md-4"><label class="form-label" for="page_number">Supporting page number</label>
+    <input class="form-control" type="number" min="1" id="page_number" name="page_number"
+      value="{{ f.page_number if f and f.page_number else '' }}">
+  </div>
+  <div class="col-md-6"><label class="form-label" for="rule_id">Related rule</label>
+    <select class="form-select" id="rule_id" name="rule_id">
+      <option value="">None</option>
+      {% for r in rules %}<option value="{{ r.rule_id }}" {{ 'selected' if f and f.rule_id==r.rule_id }}>{{ r.rule_name
+        }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-md-6"><label class="form-label req" for="severity">Severity</label>
+    <select class="form-select" id="severity" name="severity" required>
+      {% for s in severities %}<option {{ 'selected' if (f and f.severity==s) or (not f and s=='Medium' ) }}>{{ s }}
+      </option>{% endfor %}</select>
+  </div>
+  <div class="col-12"><label class="form-label req" for="description">Description</label>
+    <textarea class="form-control" id="description" name="description" rows="4"
+      required>{{ f.description if f and f.description else '' }}</textarea>
+    <div class="invalid-feedback">Describe the potential issue.</div>
+  </div>
+  <div class="col-12"><label class="form-label" for="evidence_text">Evidence passage (copy it from the cited
+      page)</label>
+    <textarea class="form-control" id="evidence_text" name="evidence_text"
+      rows="3">{{ f.evidence_text if f and f.evidence_text else '' }}</textarea>
+  </div>
+</div>

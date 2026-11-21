@@ -1,0 +1,19 @@
+# PolicyLens - Python dependencies
+# Install with:  pip install -r requirements.txt
+
+Flask>=3.0
+Flask-SQLAlchemy>=3.1
+SQLAlchemy>=2.0
+PyMySQL>=1.1
+cryptography>=42.0          # needed by PyMySQL for MySQL 8 password authentication
+python-dotenv>=1.0
+
+PyMuPDF>=1.24               # page-aware PDF text extraction (pypdf is the fallback)
+pypdf>=4.0
+
+chromadb>=0.5               # vector database
+sentence-transformers>=3.0  # embedding model: all-MiniLM-L6-v2
+
+# Testing only
+pytest>=8.0
+reportlab>=4.0              # used by the tests to generate small sample PDFs

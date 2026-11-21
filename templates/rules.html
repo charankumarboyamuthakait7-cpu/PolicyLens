@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, pill, severity_pill %}
+{% block title %}Compliance rules{% endblock %}
+{% block content %}
+<div><h1>Compliance rules</h1>
+  <p class="sub">Internal company requirements that findings can refer to. Enter only requirements your organization actually has; PolicyLens never invents legal rules.</p></div>
+
+<section class="cd pd">
+  <h2>Create rule</h2>
+  <form method="post" action="{{ url_for('main.rule_create') }}" class="row g-2" data-validate>{{ csrf() }}
+    <div class="col-md-5"><label class="form-label req" for="r_name">Rule name</label><input class="form-control" id="r_name" name="rule_name" required maxlength="255"></div>
+    <div class="col-md-4"><label class="form-label" for="r_dept">Department</label>
+      <select class="form-select" id="r_dept" name="department_id"><option value="">All departments</option>
+        {% for d in departments %}<option value="{{ d.department_id }}">{{ d.department_name }}</option>{% endfor %}</select></div>
+    <div class="col-md-3"><label class="form-label req" for="r_sev">Severity</label>
+      <select class="form-select" id="r_sev" name="severity">{% for s in severities %}<option {{ 'selected' if s == 'Medium' }}>{{ s }}</option>{% endfor %}</select></div>
+    <div class="col-12"><label class="form-label req" for="r_desc">Requirement</label><textarea class="form-control" id="r_desc" name="description" rows="2" required></textarea></div>
+    <div class="col-12"><button class="btn btn-primary" type="submit">Create rule</button></div>
+  </form>
+</section>
+
+<section class="cd"><div class="tw"><table>
+  <thead><tr><th>Rule</th><th>Department</th><th>Severity</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for r in rules %}
+    <tr><td><strong>{{ r.rule_name }}</strong><br><span class="small-mu">{{ r.description }}</span></td>
+      <td>{{ r.department.department_name if r.department else 'All' }}</td><td>{{ severity_pill(r.severity) }}</td>
+      <td>{{ pill('Active', 'g') if r.is_active else pill('Inactive', 'n') }}</td>
+      <td><form method="post" action="{{ url_for('main.rule_toggle', rule_id=r.rule_id) }}">{{ csrf() }}
+        <button class="btn btn-sm btn-outline-secondary" type="submit">{{ 'Deactivate' if r.is_active else 'Activate' }}</button></form></td></tr>
+  {% else %}<tr><td colspan="5" class="mu p-4">No rules yet.</td></tr>{% endfor %}
+  </tbody></table></div></section>
+{% endblock %}

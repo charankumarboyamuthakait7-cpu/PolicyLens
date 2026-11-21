@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "_macros.html" import status_pill, severity_pill, pager %}
+{% block title %}Compliance findings{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap gap-2">
+  <div><h1>Compliance findings</h1>
+    <p class="sub">{{ 'All findings' if user.role == 'Admin' else ('Findings assigned to you' if user.role == 'Reviewer' else 'Findings you created') }}. Findings are potential issues that need human review, not legal conclusions.</p></div>
+  {% if user.role == 'Analyst' %}<div><a class="btn btn-primary" href="{{ url_for('main.finding_new') }}">New finding</a></div>{% endif %}
+</div>
+<section class="cd">
+  <form method="get" class="p-3 d-flex gap-2 flex-wrap align-items-end">
+    <div><label class="form-label" for="status">Status</label>
+      <select class="form-select" id="status" name="status"><option value="">All</option>
+        {% for s in statuses %}<option {{ 'selected' if s == current_status }}>{{ s }}</option>{% endfor %}</select></div>
+    <button class="btn btn-primary" type="submit">Filter</button>
+  </form>
+  <div class="tw"><table>
+    <thead><tr><th>ID</th><th>Finding</th><th>Document</th><th>Severity</th><th>Status</th><th>Created by</th><th>Reviewer</th><th>Updated</th></tr></thead>
+    <tbody>
+    {% for f in pagination.items %}
+      <tr>
+        <td><a href="{{ url_for('main.finding_view', finding_id=f.finding_id) }}"><strong>F-{{ '%04d' | format(f.finding_id) }}</strong></a></td>
+        <td>{{ f.title }}</td>
+        <td>{{ f.document.title }}{% if f.page_number %}<br><span class="small-mu">page {{ f.page_number }}</span>{% endif %}</td>
+        <td>{{ severity_pill(f.severity) }}</td>
+        <td>{{ status_pill(f.status) }}</td>
+        <td>{{ f.creator.full_name }}</td>
+        <td>{{ f.reviewer.full_name if f.reviewer else '-' }}</td>
+        <td class="small-mu">{{ f.updated_at|dt }}</td>
+      </tr>
+    {% else %}<tr><td colspan="8" class="mu p-4">No findings to show.</td></tr>{% endfor %}
+    </tbody></table></div>
+  {{ pager(pagination, 'main.findings') }}
+</section>
+{% endblock %}

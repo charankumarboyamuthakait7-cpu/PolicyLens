@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% from "_macros.html" import csrf, pill, status_pill %}
+{% block title %}System status{% endblock %}
+{% block content %}
+<div><h1>System status</h1><p class="sub">Connections, models and retrieval settings. API keys and secrets are never shown.</p></div>
+
+<div class="g4">
+  <div class="cd kp"><span>Database (MySQL)</span><b style="font-size:18px">{{ pill('Connected', 'g') if db_ok else pill('Problem', 'r') }}</b><span>{{ db_detail }}</span></div>
+  <div class="cd kp"><span>Vector database (ChromaDB)</span><b style="font-size:18px">{{ pill('Ready', 'g') if vec_ok else pill('Problem', 'r') }}</b><span>{{ vec_detail }}</span></div>
+  <div class="cd kp"><span>LLM · {{ llm_provider }}</span><b style="font-size:16px">{{ llm_model }}</b><span>API key: {{ 'configured' if llm_key_set else 'NOT set' }}</span></div>
+  <div class="cd kp"><span>Embedding model</span><b style="font-size:16px;word-break:break-all">{{ embedding_model }}</b></div>
+</div>
+
+<div class="flex-row">
+  <section class="cd pd" style="flex:1 1 320px"><h2>Document processing</h2>
+    {% for s in statuses %}<div class="line"><span>{{ status_pill(s) }}</span><b>{{ counts.get(s, 0) }}</b></div>{% endfor %}</section>
+  <section class="cd pd" style="flex:1 1 320px"><h2>Retrieval configuration</h2>
+    {% for k, v in retrieval.items() %}<div class="line"><span>{{ k }}</span><b>{{ v }}</b></div>{% endfor %}
+    <p class="small-mu mt-2 mb-0">Change these in the <code>.env</code> file and restart the app.</p></section>
+</div>
+
+<section class="cd pd"><h2>Failed documents</h2>
+  {% for d in failed %}
+    <div class="line"><span><a href="{{ url_for('main.document_view', doc_id=d.document_id) }}"><strong>{{ d.title }}</strong></a><br><span class="small-mu">{{ d.processing_error }}</span></span>
+      <form method="post" action="{{ url_for('main.document_reprocess', doc_id=d.document_id) }}">{{ csrf() }}<button class="btn btn-sm btn-outline-secondary" type="submit">Reprocess</button></form></div>
+  {% else %}<div class="ex">No failed documents.</div>{% endfor %}
+</section>
+{% endblock %}

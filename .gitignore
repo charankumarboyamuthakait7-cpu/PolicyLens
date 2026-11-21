@@ -1,0 +1,10 @@
+.env
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+instance/uploads/documents/*
+instance/chroma/*
+!instance/uploads/documents/.gitkeep
+!instance/chroma/.gitkeep
