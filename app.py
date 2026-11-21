@@ -196,4 +196,4 @@ if __name__ == "__main__":
         if "login" in rule.rule or "otp" in rule.rule:
             print(rule.rule, "->", rule.endpoint, rule.methods)
 
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 9000)), debug=False)

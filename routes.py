@@ -130,6 +130,39 @@ def login():
         if candidate and candidate.is_active and candidate.check_password(password):
 
             clear_failures(key)
+                        # clear_failures(key)
+
+            # Demo Admin: bypass OTP only for the demo account.
+            if candidate.username == "demo_admin":
+                next_url = _safe_next(request.args.get("next"))
+
+                session.clear()
+                session["user_id"] = candidate.user_id
+                session.permanent = True
+
+                candidate.last_login_at = utcnow()
+
+                services.audit("login", "user", candidate.user_id, user=candidate)
+                db.session.commit()
+
+                flash("Login successful. Welcome to PolicyLens!", "success")
+                return redirect(next_url or url_for("main.dashboard"))
+
+            # Normal users must verify their email OTP.
+            session.clear()
+            session["login_otp_user_id"] = candidate.user_id
+            session["login_otp_next"] = _safe_next(request.args.get("next"))
+
+            try:
+                services.request_login_otp(candidate)
+
+                flash("Your verification code has been sent to your registered email.", "info")
+                return redirect(url_for("main.login_verify_otp"))
+
+            except ValidationError as exc:
+                session.pop("login_otp_user_id", None)
+                session.pop("login_otp_next", None)
+                flash(str(exc), "danger")
 
             # Clear the old session to prevent session fixation.
             session.clear()
