@@ -40,7 +40,7 @@ from models import (
     VectorIndex, db,
 )
 
-from security import accessible_documents_query, can
+from security import accessible_documents_query, can ,can_access_document
 
 log = logging.getLogger("policylens.services")
 
