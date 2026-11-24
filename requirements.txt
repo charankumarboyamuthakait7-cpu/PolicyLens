@@ -17,3 +17,6 @@ sentence-transformers>=3.0  # embedding model: all-MiniLM-L6-v2
 # Testing only
 pytest>=8.0
 reportlab>=4.0              # used by the tests to generate small sample PDFs
+
+
+gunicorn>=22.0
