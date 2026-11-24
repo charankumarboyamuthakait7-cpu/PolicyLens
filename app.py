@@ -49,7 +49,15 @@ def _database_uri():
     host = os.getenv("MYSQL_HOST", "localhost")
     port = os.getenv("MYSQL_PORT", "3306")
     name = os.getenv("MYSQL_DATABASE", "policylens_db")
-    return f"mysql+pymysql://{user}:{password}@{host}:{port}/{name}?charset=utf8mb4"
+
+    uri = f"mysql+pymysql://{user}:{password}@{host}:{port}/{name}?charset=utf8mb4"
+
+    # Enable TLS certificate verification for TiDB Cloud.
+    if host != "localhost" and host != "127.0.0.1":
+        uri += "&ssl_verify_cert=true&ssl_verify_identity=true"
+
+    return uri
+
 
 
 class Config:
