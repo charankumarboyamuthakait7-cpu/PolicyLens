@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 
 from flask import (
     Blueprint, abort, current_app, flash, jsonify, redirect, render_template,
-    request, send_file, session, url_for,
+    request, send_file,send_from_directory, session, url_for,
 )
 from sqlalchemy import func, or_, text
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -403,6 +403,28 @@ def reset_password():
 
     return render_template("reset_password.html")
 
+
+
+
+@bp.route("/demo/")
+def demo():
+    """Open the static PolicyLens demo prototype."""
+    prototype_dir = current_app.root_path + "/PolicyLens_Prototype"
+
+    return send_from_directory(prototype_dir, "index.html")
+
+
+@bp.route("/demo/<path:filename>")
+def demo_files(filename):
+    """Serve the prototype CSS and JavaScript files."""
+    allowed_files = ("style.css", "script.js")
+
+    if filename not in allowed_files:
+        abort(404)
+
+    prototype_dir = current_app.root_path + "/PolicyLens_Prototype"
+
+    return send_from_directory(prototype_dir, filename)
 
 @bp.route("/")
 @login_required

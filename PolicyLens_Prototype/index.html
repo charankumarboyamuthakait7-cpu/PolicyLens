@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PolicyLens | Enterprise Contract Intelligence</title>
+
+<link rel="stylesheet" href="/demo/style.css">
+</head>
+
+<body>
+
+    <!-- Demo notice -->
+    <div class="demo-notice">
+        <strong>DEMO ENVIRONMENT</strong>
+        <span>
+            This is a sample PolicyLens prototype.
+            No real documents or organizational data are connected.
+        </span>
+    </div>
+
+    <!-- Login screen -->
+    <section id="loginScreen" class="login-screen">
+
+        <div class="login-card">
+
+            <div class="brand-logo">
+                <div class="logo-icon">P</div>
+                <div>
+                    <h2>PolicyLens</h2>
+                    <p>Enterprise Intelligence Platform</p>
+                </div>
+            </div>
+
+            <div class="login-content">
+                <h1>Explore PolicyLens</h1>
+
+                <p>
+                    Experience the contract and policy intelligence
+                    platform through an interactive demonstration.
+                </p>
+
+                <div class="form-group">
+                    <label for="roleSelect">Select demo role</label>
+
+                    <select id="roleSelect">
+                        <option value="Admin">Administrator</option>
+                        <option value="Analyst">Analyst</option>
+                        <option value="Reviewer">Reviewer</option>
+                    </select>
+                </div>
+
+                <button id="exploreDemoBtn" class="primary-btn full-width">
+    Explore Demo Application
+</button>
+
+                <p class="login-footer">
+                    Simulation Environment · Sample Data Only
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- Main application -->
+    <section id="appScreen" class="app-screen hidden">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+
+            <div class="sidebar-brand">
+                <div class="logo-icon">P</div>
+
+                <div>
+                    <h2>PolicyLens</h2>
+                    <p>Intelligence Platform</p>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <span class="sidebar-label">WORKSPACE</span>
+                <nav id="navigation"></nav>
+            </div>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-demo">
+                    <span class="demo-dot"></span>
+                    Demo Environment
+                </div>
+
+                <p>Contract & Policy Intelligence</p>
+            </div>
+
+        </aside>
+
+
+        <!-- Main content area -->
+        <main class="main-area">
+
+            <!-- Top navigation -->
+            <header class="topbar">
+
+                <div class="topbar-left">
+                    <span class="organization-label">
+                        Organization
+                    </span>
+
+                    <strong>Techtonic Solutions Pvt. Ltd.</strong>
+                </div>
+
+                <div class="topbar-right">
+
+                    <div class="user-information">
+                        <div class="user-avatar">D</div>
+
+                        <div>
+                            <strong>Demo User</strong>
+                            <span id="userContext">System Administrator · Admin</span>
+                        </div>
+                    </div>
+
+                    <button id="logoutBtn" class="logout-btn">
+    Log Out
+</button>
+
+                </div>
+            </header>
+
+
+            <!-- Page content -->
+            <div id="pageContent" class="page-content"></div>
+
+            <footer class="app-footer">
+                <span>PolicyLens</span>
+                <span>Enterprise Contract and Policy Intelligence Platform</span>
+                <span>Simulation Environment</span>
+            </footer>
+
+        </main>
+
+    </section>
+
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+ <script src="/demo/script.js"></script>
+
+</body>
+</html>
