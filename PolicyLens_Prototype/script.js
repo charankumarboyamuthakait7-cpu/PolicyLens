@@ -35,23 +35,54 @@ const roleMenus = {
 let currentRole = "Admin";
 let currentPage = "Dashboard";
 
-const sampleDocuments = [
+let sampleDocuments = [
     ["DOC-001", "Employee Agreement.pdf", "Human Resources", "Approved"],
     ["DOC-002", "Data Privacy Policy.pdf", "IT Department", "Approved"],
     ["DOC-003", "Vendor Service Agreement.pdf", "Procurement", "Pending"]
 ];
 
-const sampleFindings = [
+let sampleFindings = [
     ["FND-101", "Missing termination clause", "High", "Pending"],
     ["FND-102", "Data retention period", "Medium", "Under Review"],
     ["FND-103", "Unclear payment obligations", "High", "Pending"]
 ];
 
+let sampleUsers = [
+    ["Demo Admin", "admin@policylens.demo", "Admin", "Administration", "Active"],
+    ["Demo Analyst", "analyst@policylens.demo", "Analyst", "Legal", "Active"],
+    ["Demo Reviewer", "reviewer@policylens.demo", "Reviewer", "Compliance", "Active"]
+];
+
+let sampleDepartments = [
+    ["Human Resources", "HR"],
+    ["Information Technology", "IT"],
+    ["Finance", "FIN"],
+    ["Legal", "LEG"],
+    ["Procurement", "PRO"],
+    ["Compliance", "COM"]
+];
+
+
+/* Helper: safely display user-entered text */
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, function (character) {
+        const entities = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        };
+
+        return entities[character];
+    });
+}
+
 
 /* Enter demo application */
 
 function enterDemo() {
-    
     currentRole = document.getElementById("roleSelect").value;
 
     document.getElementById("loginScreen").classList.add("hidden");
@@ -78,13 +109,15 @@ function buildNavigation() {
         const button = document.createElement("button");
 
         button.className = "nav-item";
-
         button.innerHTML = `
             <span class="nav-icon" aria-hidden="true">${icon}</span>
             <span>${label}</span>
         `;
 
-        button.addEventListener("click", () => showPage(label));
+        button.addEventListener("click", function () {
+            showPage(label);
+        });
+
         nav.appendChild(button);
     });
 }
@@ -156,33 +189,32 @@ function dashboardPage() {
             </section>
 
             <div class="quick-actions">
-                <button class="quick-primary"
-                    onclick="showPage('Upload')">
+                <button class="quick-primary" data-page="Upload">
                     Upload document
                 </button>
 
-                <button onclick="showPage('Documents')">
+                <button data-page="Documents">
                     Browse documents
                 </button>
 
-                <button onclick="showPage('AI Assistant')">
+                <button data-page="AI Assistant">
                     Ask PolicyLens
                 </button>
 
-                <button onclick="showPage('Compliance findings')">
+                <button data-page="Compliance findings">
                     Compliance findings
                 </button>
             </div>
 
             <section class="stats-grid">
-                ${statCard("Accessible documents", "13")}
+                ${statCard("Accessible documents", String(sampleDocuments.length + 10))}
                 ${statCard("Agreements", "7")}
                 ${statCard("Policies", "6")}
                 ${statCard("Awaiting indexing", "0")}
                 ${statCard("Failed processing", "0")}
-                ${statCard("Open compliance findings", "1")}
-                ${statCard("Users (active)", "10 / 11")}
-                ${statCard("Departments", "6")}
+                ${statCard("Open compliance findings", String(sampleFindings.length))}
+                ${statCard("Users (active)", String(sampleUsers.length))}
+                ${statCard("Departments", String(sampleDepartments.length))}
                 ${statCard("Audit events", "213")}
             </section>
         `;
@@ -192,11 +224,11 @@ function dashboardPage() {
         ? [
             ["My documents", "18"],
             ["Processed", "15"],
-            ["Findings", "8"],
+            ["Findings", String(sampleFindings.length)],
             ["Comparisons", "4"]
         ]
         : [
-            ["Assigned findings", "6"],
+            ["Assigned findings", String(sampleFindings.length)],
             ["Pending review", "3"],
             ["Reviewed", "12"],
             ["Comments", "9"]
@@ -216,23 +248,21 @@ function dashboardPage() {
         <div class="quick-actions">
             ${currentRole === "Analyst"
                 ? `
-                    <button class="quick-primary"
-                        onclick="showPage('Upload')">
+                    <button class="quick-primary" data-page="Upload">
                         Upload document
                     </button>
-                    <button onclick="showPage('Documents')">
+                    <button data-page="Documents">
                         Browse documents
                     </button>
-                    <button onclick="showPage('AI Assistant')">
+                    <button data-page="AI Assistant">
                         Ask PolicyLens
                     </button>
                 `
                 : `
-                    <button class="quick-primary"
-                        onclick="showPage('Assigned findings')">
+                    <button class="quick-primary" data-page="Assigned findings">
                         View assigned findings
                     </button>
-                    <button onclick="showPage('Review history')">
+                    <button data-page="Review history">
                         Review history
                     </button>
                 `
@@ -240,9 +270,7 @@ function dashboardPage() {
         </div>
 
         <section class="stats-grid">
-            ${stats.map(item =>
-                statCard(item[0], item[1])
-            ).join("")}
+            ${stats.map(item => statCard(item[0], item[1])).join("")}
         </section>
     `;
 }
@@ -275,19 +303,20 @@ function pageHeading(title, description) {
 /* Document library */
 
 function documentLibraryPage() {
-    const rows = sampleDocuments.map(doc => `
+    const rows = sampleDocuments.map((doc, index) => `
         <tr>
-            <td>${doc[0]}</td>
-            <td>${doc[1]}</td>
-            <td>${doc[2]}</td>
+            <td>${escapeHtml(doc[0])}</td>
+            <td>${escapeHtml(doc[1])}</td>
+            <td>${escapeHtml(doc[2])}</td>
             <td>
                 <span class="status ${doc[3] === "Pending" ? "pending" : ""}">
-                    ${doc[3]}
+                    ${escapeHtml(doc[3])}
                 </span>
             </td>
             <td>
                 <button class="small-btn"
-                    onclick="notify('Sample document preview opened.')">
+                    data-action="view-document"
+                    data-index="${index}">
                     View
                 </button>
             </td>
@@ -308,8 +337,7 @@ function documentLibraryPage() {
         <div class="panel">
             <div class="panel-header">
                 <h3>Available documents</h3>
-                <button class="secondary-btn"
-                    onclick="notify('Sample document list refreshed.')">
+                <button class="secondary-btn" data-action="refresh-documents">
                     Refresh
                 </button>
             </div>
@@ -328,6 +356,8 @@ function documentLibraryPage() {
                     <tbody>${rows}</tbody>
                 </table>
             </div>
+
+            <div id="documentDetails"></div>
         </div>
     `;
 }
@@ -336,6 +366,10 @@ function documentLibraryPage() {
 /* Document upload */
 
 function uploadPage() {
+    const departmentOptions = sampleDepartments.map(department =>
+        `<option>${escapeHtml(department[0])}</option>`
+    ).join("");
+
     return `
         ${pageHeading(
             "Upload",
@@ -359,20 +393,16 @@ function uploadPage() {
             <div class="form-group">
                 <label>Department</label>
                 <select id="docDepartment">
-                    <option>Human Resources</option>
-                    <option>Information Technology</option>
-                    <option>Finance</option>
-                    <option>Legal</option>
-                    <option>Procurement</option>
+                    ${departmentOptions}
                 </select>
             </div>
 
             <div class="form-group">
                 <label>Select PDF</label>
-                <input type="file" accept=".pdf" id="demoFile">
+                <input type="file" accept=".pdf,application/pdf" id="demoFile">
             </div>
 
-            <button class="primary-btn" onclick="simulateUpload()">
+            <button class="primary-btn" data-action="simulate-upload">
                 Simulate upload
             </button>
         </div>
@@ -421,7 +451,7 @@ function assistantPage() {
                     placeholder="Ask a question about the selected document..."></textarea>
             </div>
 
-            <button class="primary-btn" onclick="simulateQuestion()">
+            <button class="primary-btn" data-action="simulate-question">
                 Ask question
             </button>
         </div>
@@ -462,7 +492,7 @@ function comparisonPage() {
                 </select>
             </div>
 
-            <button class="primary-btn" onclick="simulateComparison()">
+            <button class="primary-btn" data-action="simulate-comparison">
                 Compare documents
             </button>
 
@@ -475,19 +505,20 @@ function comparisonPage() {
 /* Compliance findings */
 
 function findingsPage() {
-    const rows = sampleFindings.map(item => `
+    const rows = sampleFindings.map((item, index) => `
         <tr>
-            <td>${item[0]}</td>
-            <td>${item[1]}</td>
-            <td>${item[2]}</td>
+            <td>${escapeHtml(item[0])}</td>
+            <td>${escapeHtml(item[1])}</td>
+            <td>${escapeHtml(item[2])}</td>
             <td>
                 <span class="status ${item[3] === "Pending" ? "pending" : "review"}">
-                    ${item[3]}
+                    ${escapeHtml(item[3])}
                 </span>
             </td>
             <td>
                 <button class="small-btn"
-                    onclick="notify('Sample finding details opened.')">
+                    data-action="view-finding"
+                    data-index="${index}">
                     View
                 </button>
             </td>
@@ -505,7 +536,7 @@ function findingsPage() {
                 <h3>Sample findings</h3>
 
                 ${currentRole === "Analyst"
-                    ? '<button class="primary-btn" onclick="showFindingForm()">Create finding</button>'
+                    ? '<button class="primary-btn" data-action="show-finding-form">Create finding</button>'
                     : ''
                 }
             </div>
@@ -525,6 +556,7 @@ function findingsPage() {
                 </table>
             </div>
 
+            <div id="findingDetails"></div>
             <div id="findingForm"></div>
         </div>
     `;
@@ -534,7 +566,11 @@ function findingsPage() {
 /* Finding creation form */
 
 function showFindingForm() {
-    document.getElementById("findingForm").innerHTML = `
+    const form = document.getElementById("findingForm");
+
+    if (!form) return;
+
+    form.innerHTML = `
         <div class="panel">
             <h3>Create sample finding</h3>
 
@@ -553,8 +589,12 @@ function showFindingForm() {
                 </select>
             </div>
 
-            <button class="primary-btn" onclick="simulateFinding()">
+            <button class="primary-btn" data-action="simulate-finding">
                 Submit demo finding
+            </button>
+
+            <button class="secondary-btn" data-action="cancel-finding">
+                Cancel
             </button>
         </div>
     `;
@@ -650,6 +690,22 @@ function historyPage() {
 /* User management */
 
 function usersPage() {
+    const rows = sampleUsers.map((user, index) => `
+        <tr>
+            <td>${escapeHtml(user[0])}</td>
+            <td>${escapeHtml(user[2])}</td>
+            <td>${escapeHtml(user[3])}</td>
+            <td><span class="status">${escapeHtml(user[4])}</span></td>
+            <td>
+                <button class="small-btn"
+                    data-action="view-user"
+                    data-index="${index}">
+                    View
+                </button>
+            </td>
+        </tr>
+    `).join("");
+
     return `
         ${pageHeading(
             "Users",
@@ -659,8 +715,7 @@ function usersPage() {
         <div class="panel">
             <div class="panel-header">
                 <h3>Users</h3>
-                <button class="primary-btn"
-                    onclick="notify('Demo: Add user form opened.')">
+                <button class="primary-btn" data-action="show-user-form">
                     Add user
                 </button>
             </div>
@@ -676,34 +731,67 @@ function usersPage() {
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Demo Admin</td>
-                            <td>Admin</td>
-                            <td>Administration</td>
-                            <td><span class="status">Active</span></td>
-                            <td><button class="small-btn"
-                                onclick="notify('Sample user details opened.')">View</button></td>
-                        </tr>
-                        <tr>
-                            <td>Demo Analyst</td>
-                            <td>Analyst</td>
-                            <td>Legal</td>
-                            <td><span class="status">Active</span></td>
-                            <td><button class="small-btn"
-                                onclick="notify('Sample user details opened.')">View</button></td>
-                        </tr>
-                        <tr>
-                            <td>Demo Reviewer</td>
-                            <td>Reviewer</td>
-                            <td>Compliance</td>
-                            <td><span class="status">Active</span></td>
-                            <td><button class="small-btn"
-                                onclick="notify('Sample user details opened.')">View</button></td>
-                        </tr>
-                    </tbody>
+                    <tbody>${rows}</tbody>
                 </table>
             </div>
+
+            <div id="userDetails"></div>
+            <div id="userForm"></div>
+        </div>
+    `;
+}
+
+
+/* Add user form */
+
+function showUserForm() {
+    const form = document.getElementById("userForm");
+
+    if (!form) return;
+
+    const departments = sampleDepartments.map(department =>
+        `<option>${escapeHtml(department[0])}</option>`
+    ).join("");
+
+    form.innerHTML = `
+        <div class="panel">
+            <h3>Add demo user</h3>
+
+            <div class="form-group">
+                <label>Full name</label>
+                <input type="text" id="newUserName"
+                    placeholder="Enter full name">
+            </div>
+
+            <div class="form-group">
+                <label>Email address</label>
+                <input type="email" id="newUserEmail"
+                    placeholder="Enter email address">
+            </div>
+
+            <div class="form-group">
+                <label>Role</label>
+                <select id="newUserRole">
+                    <option>Admin</option>
+                    <option>Analyst</option>
+                    <option>Reviewer</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Department</label>
+                <select id="newUserDepartment">
+                    ${departments}
+                </select>
+            </div>
+
+            <button class="primary-btn" data-action="save-user">
+                Save demo user
+            </button>
+
+            <button class="secondary-btn" data-action="cancel-user">
+                Cancel
+            </button>
         </div>
     `;
 }
@@ -712,6 +800,14 @@ function usersPage() {
 /* Departments */
 
 function departmentsPage() {
+    const rows = sampleDepartments.map(department => `
+        <tr>
+            <td>${escapeHtml(department[0])}</td>
+            <td>${escapeHtml(department[1])}</td>
+            <td><span class="status">Active</span></td>
+        </tr>
+    `).join("");
+
     return `
         ${pageHeading(
             "Departments",
@@ -721,8 +817,7 @@ function departmentsPage() {
         <div class="panel">
             <div class="panel-header">
                 <h3>Organization departments</h3>
-                <button class="primary-btn"
-                    onclick="notify('Demo: Add department form opened.')">
+                <button class="primary-btn" data-action="show-department-form">
                     Add department
                 </button>
             </div>
@@ -736,16 +831,46 @@ function departmentsPage() {
                             <th>Status</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr><td>Human Resources</td><td>HR</td><td><span class="status">Active</span></td></tr>
-                        <tr><td>Information Technology</td><td>IT</td><td><span class="status">Active</span></td></tr>
-                        <tr><td>Finance</td><td>FIN</td><td><span class="status">Active</span></td></tr>
-                        <tr><td>Legal</td><td>LEG</td><td><span class="status">Active</span></td></tr>
-                        <tr><td>Procurement</td><td>PRO</td><td><span class="status">Active</span></td></tr>
-                        <tr><td>Compliance</td><td>COM</td><td><span class="status">Active</span></td></tr>
-                    </tbody>
+                    <tbody>${rows}</tbody>
                 </table>
             </div>
+
+            <div id="departmentForm"></div>
+        </div>
+    `;
+}
+
+
+/* Add department form */
+
+function showDepartmentForm() {
+    const form = document.getElementById("departmentForm");
+
+    if (!form) return;
+
+    form.innerHTML = `
+        <div class="panel">
+            <h3>Add demo department</h3>
+
+            <div class="form-group">
+                <label>Department name</label>
+                <input type="text" id="newDepartmentName"
+                    placeholder="Enter department name">
+            </div>
+
+            <div class="form-group">
+                <label>Department code</label>
+                <input type="text" id="newDepartmentCode"
+                    placeholder="Example: HR">
+            </div>
+
+            <button class="primary-btn" data-action="save-department">
+                Save demo department
+            </button>
+
+            <button class="secondary-btn" data-action="cancel-department">
+                Cancel
+            </button>
         </div>
     `;
 }
@@ -862,6 +987,7 @@ function auditPage() {
 
 function simulateUpload() {
     const name = document.getElementById("docName").value.trim();
+    const department = document.getElementById("docDepartment").value;
     const file = document.getElementById("demoFile").files[0];
 
     if (!name || !file) {
@@ -869,7 +995,23 @@ function simulateUpload() {
         return;
     }
 
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+        notify("Please select a PDF file.");
+        return;
+    }
+
+    const newId = "DOC-" + String(sampleDocuments.length + 1).padStart(3, "0");
+
+    sampleDocuments.push([
+        newId,
+        name.toLowerCase().endsWith(".pdf") ? name : name + ".pdf",
+        department,
+        "Uploaded (Demo)"
+    ]);
+
     notify("Demo upload completed. No file was saved.");
+
+    showPage("Documents");
 }
 
 
@@ -877,6 +1019,7 @@ function simulateUpload() {
 
 function simulateQuestion() {
     const question = document.getElementById("assistantQuestion").value.trim();
+    const selectedDocument = document.getElementById("assistantDocument").value;
     const chatBox = document.getElementById("chatBox");
 
     if (!question) {
@@ -886,6 +1029,9 @@ function simulateQuestion() {
 
     const message = document.createElement("div");
     message.className = "chat-message";
+
+    const questionText = document.createElement("p");
+    questionText.textContent = question;
 
     const response = document.createElement("div");
 
@@ -897,9 +1043,10 @@ function simulateQuestion() {
         from authorized documents and provide source citations.
         <br><br>
         <strong>Sample source:</strong>
-        Employee Agreement.pdf, Page 4
+        ${escapeHtml(selectedDocument)}, Page 4
     `;
 
+    message.appendChild(questionText);
     message.appendChild(response);
     chatBox.appendChild(message);
 
@@ -921,12 +1068,12 @@ function simulateComparison() {
     }
 
     document.getElementById("comparisonResult").innerHTML = `
-        <div class="info-box" style="margin-top:20px;">
+        <div class="info-box">
             <strong>Sample comparison completed</strong>
             <br>
-            Document 1: ${first}
+            Document 1: ${escapeHtml(first)}
             <br>
-            Document 2: ${second}
+            Document 2: ${escapeHtml(second)}
             <br><br>
             This is an illustrative comparison.
             No actual document analysis was performed.
@@ -941,12 +1088,171 @@ function simulateFinding() {
     const description =
         document.getElementById("findingDescription").value.trim();
 
+    const severity =
+        document.getElementById("findingSeverity").value;
+
     if (!description) {
         notify("Please enter a finding description.");
         return;
     }
 
-    notify("Demo finding submitted. No record was saved.");
+    const newId = "FND-" + String(101 + sampleFindings.length).padStart(3, "0");
+
+    sampleFindings.push([
+        newId,
+        description,
+        severity,
+        "Pending"
+    ]);
+
+    notify("Demo finding submitted successfully.");
+
+    showPage("Compliance findings");
+}
+
+
+/* Save demo user */
+
+function saveUser() {
+    const name = document.getElementById("newUserName").value.trim();
+    const email = document.getElementById("newUserEmail").value.trim();
+    const role = document.getElementById("newUserRole").value;
+    const department = document.getElementById("newUserDepartment").value;
+
+    if (!name || !email) {
+        notify("Please enter the user's name and email address.");
+        return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+        notify("Please enter a valid email address.");
+        return;
+    }
+
+    const emailExists = sampleUsers.some(user =>
+        user[1].toLowerCase() === email.toLowerCase()
+    );
+
+    if (emailExists) {
+        notify("This demo email address already exists.");
+        return;
+    }
+
+    sampleUsers.push([name, email, role, department, "Active"]);
+
+    notify("Demo user added successfully.");
+
+    showPage("Users");
+}
+
+
+/* Save demo department */
+
+function saveDepartment() {
+    const name = document.getElementById("newDepartmentName").value.trim();
+    const code = document.getElementById("newDepartmentCode").value.trim();
+
+    if (!name || !code) {
+        notify("Please enter the department name and code.");
+        return;
+    }
+
+    const exists = sampleDepartments.some(department =>
+        department[0].toLowerCase() === name.toLowerCase() ||
+        department[1].toLowerCase() === code.toLowerCase()
+    );
+
+    if (exists) {
+        notify("This department name or code already exists.");
+        return;
+    }
+
+    sampleDepartments.push([name, code.toUpperCase()]);
+
+    notify("Demo department added successfully.");
+
+    showPage("Departments");
+}
+
+
+/* View sample document details */
+
+function viewDocument(index) {
+    const doc = sampleDocuments[index];
+
+    if (!doc) return;
+
+    const details = document.getElementById("documentDetails");
+
+    details.innerHTML = `
+        <div class="info-box">
+            <strong>Document details</strong>
+            <br>
+            Document ID: ${escapeHtml(doc[0])}
+            <br>
+            Document name: ${escapeHtml(doc[1])}
+            <br>
+            Department: ${escapeHtml(doc[2])}
+            <br>
+            Status: ${escapeHtml(doc[3])}
+            <br><br>
+            This is a sample document. No real PDF is connected.
+        </div>
+    `;
+}
+
+
+/* View sample finding details */
+
+function viewFinding(index) {
+    const finding = sampleFindings[index];
+
+    if (!finding) return;
+
+    const details = document.getElementById("findingDetails");
+
+    details.innerHTML = `
+        <div class="info-box">
+            <strong>Finding details</strong>
+            <br>
+            Finding ID: ${escapeHtml(finding[0])}
+            <br>
+            Description: ${escapeHtml(finding[1])}
+            <br>
+            Severity: ${escapeHtml(finding[2])}
+            <br>
+            Status: ${escapeHtml(finding[3])}
+        </div>
+    `;
+}
+
+
+/* View sample user details */
+
+function viewUser(index) {
+    const user = sampleUsers[index];
+
+    if (!user) return;
+
+    const details = document.getElementById("userDetails");
+
+    details.innerHTML = `
+        <div class="info-box">
+            <strong>User details</strong>
+            <br>
+            Name: ${escapeHtml(user[0])}
+            <br>
+            Email: ${escapeHtml(user[1])}
+            <br>
+            Role: ${escapeHtml(user[2])}
+            <br>
+            Department: ${escapeHtml(user[3])}
+            <br>
+            Status: ${escapeHtml(user[4])}
+        </div>
+    `;
 }
 
 
@@ -954,6 +1260,8 @@ function simulateFinding() {
 
 function notify(message) {
     const toast = document.getElementById("toast");
+
+    if (!toast) return;
 
     toast.textContent = message;
     toast.style.display = "block";
@@ -966,6 +1274,56 @@ function notify(message) {
 }
 
 
+/* Central click handler for dynamically created buttons */
+
+document.addEventListener("click", function (event) {
+    const pageButton = event.target.closest("[data-page]");
+
+    if (pageButton) {
+        showPage(pageButton.dataset.page);
+        return;
+    }
+
+    const actionButton = event.target.closest("[data-action]");
+
+    if (!actionButton) return;
+
+    const action = actionButton.dataset.action;
+
+    const actions = {
+        "simulate-upload": simulateUpload,
+        "simulate-question": simulateQuestion,
+        "simulate-comparison": simulateComparison,
+        "show-finding-form": showFindingForm,
+        "simulate-finding": simulateFinding,
+        "cancel-finding": () => {
+            document.getElementById("findingForm").innerHTML = "";
+        },
+        "show-user-form": showUserForm,
+        "save-user": saveUser,
+        "cancel-user": () => {
+            document.getElementById("userForm").innerHTML = "";
+        },
+        "show-department-form": showDepartmentForm,
+        "save-department": saveDepartment,
+        "cancel-department": () => {
+            document.getElementById("departmentForm").innerHTML = "";
+        },
+        "refresh-documents": () => {
+            showPage("Documents");
+            notify("Sample document list refreshed.");
+        },
+        "view-document": () => viewDocument(Number(actionButton.dataset.index)),
+        "view-finding": () => viewFinding(Number(actionButton.dataset.index)),
+        "view-user": () => viewUser(Number(actionButton.dataset.index))
+    };
+
+    if (actions[action]) {
+        actions[action]();
+    }
+});
+
+
 /* Exit demo */
 
 function logout() {
@@ -973,8 +1331,11 @@ function logout() {
     document.getElementById("loginScreen").classList.remove("hidden");
     document.getElementById("roleSelect").value = "Admin";
 }
-document.addEventListener("DOMContentLoaded", function () {
 
+
+/* Initial button events */
+
+document.addEventListener("DOMContentLoaded", function () {
     const exploreButton = document.getElementById("exploreDemoBtn");
     const logoutButton = document.getElementById("logoutBtn");
 
@@ -985,5 +1346,4 @@ document.addEventListener("DOMContentLoaded", function () {
     if (logoutButton) {
         logoutButton.addEventListener("click", logout);
     }
-
 });
